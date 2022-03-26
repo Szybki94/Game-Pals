@@ -3,7 +3,7 @@
 
 {% block login_form %}
     <form class="form" action="" method="post">
-    {% csrf_token %}
+        {% csrf_token %}
         <h3 class="text-center text-info">Login</h3>
         <div class="form-group">
             <label for="username" class="text-info">Username:</label><br>
@@ -15,13 +15,9 @@
         </div>
         <div class="form-group">
             <br>
-{#                                <label for="remember-me" class="text-info"><span>Remember me</span> <span><input id="remember-me" name="remember-me" type="checkbox"></span></label><br>#}
-            <input type="submit" name="submit" class="btn btn-info btn-md" value="submit">
-        </div>
-        <br>
-        <br>
-        <div id="register-link" class="form-group">
-            <a href="#" class="btn btn-info btn-md" style="float: right">Register here</a>
+{# <label for="remember-me" class="text-info"><span>Remember me</span> <span><input id="remember-me" name="remember-me" type="checkbox"></span></label><br>#}
+            <input type="submit" name="submit" class="btn btn-info btn-md" value="Submit">
+            <a href="{% url 'register' %}" class="btn btn-info btn-md" style="float: right">Register here</a>
         </div>
     </form>
 {% endblock %}
