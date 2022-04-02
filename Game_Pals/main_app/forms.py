@@ -1,5 +1,5 @@
 from django import forms
-from .models import Game
+from .models import Game, Profile
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, SetPasswordForm
@@ -61,6 +61,17 @@ class UserUpdateForm1(forms.Form):
         ])
 
         self.fields['games'].choices = choices
+
+
+class UserUpdateForm2(forms.Form):
+    avatar = forms.ImageField()
+    personal_info = forms.CharField(widget=forms.Textarea)
+
+    def __init__(self, *args, **kwargs):
+        super(UserUpdateForm2, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
+
 
 # class Pizza2Form(forms.Form):
 #     size = forms.ChoiceField(label="Wielkość", choices=PIZZA_SIZES, widget=forms.Select)
