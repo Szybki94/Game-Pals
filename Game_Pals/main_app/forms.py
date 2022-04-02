@@ -14,6 +14,17 @@ class LoginForm(forms.ModelForm):
             "password": forms.PasswordInput(render_value=True, attrs={'class': "form-control"}),
         }
 
+    def clean(self):
+        cleaned_data = super().clean()
+        username = cleaned_data.get("username")
+        user = User.objects.filter(username=username).first()
+        if user:
+            self.add_error("password", "Wrong password")
+            self.add_error("username", "Username looks correct ;)")
+
+
+
+
 
 class RegisterForm(UserCreationForm):
     class Meta:
@@ -41,8 +52,8 @@ class RegisterForm(UserCreationForm):
         if user:
             self.add_error("username", "User already exists.")
 
-        # if "@" not in email:
-        #     self.add_error("email", "Wrong email.")
+        if "@" not in email:
+            self.add_error("email", "Wrong email.")
 
         if password1 != password2:
             self.add_error("password2", "Passwords do not match.")

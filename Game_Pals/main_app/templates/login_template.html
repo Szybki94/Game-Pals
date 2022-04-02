@@ -40,6 +40,15 @@
                             </div>
                         {% endblock %}
                         </form>
+                        <div>
+                            {% block messages %}
+                                {% if messages %}
+                                    {% for message in messages %}
+                                        {{ message|safe }}
+                                    {% endfor %}
+                                {% endif %}
+                            {% endblock %}
+                        </div>
                     </div>
                 </div>
             </div>

@@ -53,6 +53,7 @@ class LoginView(View):
         return render(request, "login_page.html", self.ctx)
 
     def post(self, request):
+        form = LoginForm(request.POST)
         username = request.POST.get("username")
         password = request.POST.get("password")
         user = authenticate(request, username=username, password=password)
@@ -61,8 +62,8 @@ class LoginView(View):
             messages.success(request, "You logged in")
             return redirect("home")
         else:
-            messages.error(request, "Something went wrong, please try again")
-            return render(request, "login", self.ctx)
+            messages.error(request, form.errors)
+            return render(request, "login_page.html", self.ctx)
 
 
 class RegisterView(View):
@@ -82,7 +83,7 @@ class RegisterView(View):
             login(request, new_user)  # Odrazu loguje użytkownika
             return redirect("/update-user-1/")
         else:
-            messages.success(request, "Something went wrong, please try again")
+            messages.error(request, form.errors)
             return render(request, "register_page.html", {"form": form})
 
 
@@ -115,9 +116,6 @@ class UserUpdateView2(View):
         return render(request, "register_page_3.html", ctx)
 
     # def post(self, request):
-
-
-
 
         # form = UserUpdateForm2(request.POST)
         # ctx = {"form": form}
