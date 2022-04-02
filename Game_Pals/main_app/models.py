@@ -12,7 +12,9 @@ class Profile(models.Model):
 
 class Game(models.Model):
     name = models.CharField(max_length=128)
-    description = models.TextField()
-    image = models.ImageField(blank=True)
+    description = models.TextField(null=True)
+    image = models.ImageField(blank=True, null=True)
     users = models.ManyToManyField(User, related_name='games')
 
+    def __str__(self):
+        return self.name

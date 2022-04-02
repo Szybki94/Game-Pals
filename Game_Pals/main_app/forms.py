@@ -1,4 +1,5 @@
 from django import forms
+from .models import Game
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, SetPasswordForm
@@ -19,11 +20,8 @@ class RegisterForm(UserCreationForm):
         model = User
         fields = ["first_name", "username", "email", "password1", "password2"]
         widgets = {
-            "first_name": forms.TextInput(attrs={"class": "form-control"}),
-            "username": forms.TextInput(attrs={"class": "form-control"}),
-            "email": forms.TextInput(attrs={"class": "form-control"}),
-            "password1": forms.PasswordInput(render_value=True, attrs={"class": "form-control"}),
-            "password2": forms.PasswordInput(render_value=True, attrs={"class": "form-control"})
+            "password1": forms.PasswordInput(render_value=True),
+            "password2": forms.PasswordInput(render_value=True)
         }
 
     def __init__(self, *args, **kwargs):
@@ -50,3 +48,27 @@ class RegisterForm(UserCreationForm):
             self.add_error("password2", "Passwords do not match.")
 
         return cleaned_data
+
+
+class UserUpdateForm1(forms.Form):
+    games = forms.MultipleChoiceField(label="Games", widget=forms.CheckboxSelectMultiple)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        choices = tuple([
+            (game.id, f'{game.name}')
+            for game in Game.objects.all().order_by('name')
+        ])
+
+        self.fields['games'].choices = choices
+
+# class Pizza2Form(forms.Form):
+#     size = forms.ChoiceField(label="Wielkość", choices=PIZZA_SIZES, widget=forms.Select)
+#     toppings = forms.MultipleChoiceField(label="Dodatki", widget=forms.CheckboxSelectMultiple)
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         choices = tuple( [ # Lista składana
+#             (topping.id, f'{topping.name} ({topping.price})') # Element to krotka z id i opisem
+#             for topping in Toppings.objects.all()
+#         ] )
+#         self.fields['toppings'].choices = choices
