@@ -21,6 +21,7 @@ class LoginForm(forms.ModelForm):
         if user:
             self.add_error("password", "Wrong password")
             self.add_error("username", "Username looks correct ;)")
+        return cleaned_data
 
 
 
@@ -75,14 +76,8 @@ class UserUpdateForm1(forms.Form):
 
 
 class UserUpdateForm2(forms.Form):
-    avatar = forms.ImageField()
+    avatar = forms.ImageField(required=False, widget=forms.FileInput(attrs={'class': 'form-control-file'}))
     personal_info = forms.CharField(widget=forms.Textarea)
-
-    def __init__(self, *args, **kwargs):
-        super(UserUpdateForm2, self).__init__(*args, **kwargs)
-        for visible in self.visible_fields():
-            visible.field.widget.attrs['class'] = 'form-control'
-
 
 # class Pizza2Form(forms.Form):
 #     size = forms.ChoiceField(label="Wielkość", choices=PIZZA_SIZES, widget=forms.Select)

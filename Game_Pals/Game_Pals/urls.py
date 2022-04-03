@@ -19,18 +19,17 @@ from django.conf.urls.static import static
 
 from django.urls import path
 from django.contrib.auth.decorators import login_required
-from main_app.views import TEST, MainView, HomeView, LoginView, RegisterView, UserUpdateView1, \
+from main_app.views import MainView, HomeView, LoginView, RegisterView, UserUpdateView1, \
     UserUpdateView2
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('TEST/', TEST.as_view(), name="TEST"),
     path('', MainView.as_view(), name="main"),
     path('home/', login_required(HomeView.as_view()), name="home"),
     path('login/', LoginView.as_view(), name="login"),
     path('register/', RegisterView.as_view(), name="register"),
-    path('update-user-1/', UserUpdateView1.as_view(), name="user-update-1"),
-    path('update-user-2/', UserUpdateView2.as_view(), name="user-update-2"),
+    path('update-user-1/', login_required(UserUpdateView1.as_view()), name="user-update-1"),
+    path('update-user-2/', login_required(UserUpdateView2.as_view()), name="user-update-2"),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
