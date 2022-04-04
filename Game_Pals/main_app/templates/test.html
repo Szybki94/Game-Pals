@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "template.html" %}
 
 
 {% block title%}
@@ -7,7 +7,19 @@
 
 
 {% block left_menu %}
-{#    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">Dashboard</a>#}
+    {{ user.username }}
+    <hr>
+    <img src="/images/{{ avatar }}" alt="Avatar" class="avatar">
+    <hr>
+    <h4>Your games:</h4>
+    {% for games in user.games.name %}
+    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="fill-me-with-link!!!">{{ game }}</a>
+        {% empty %}
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="fill-me-with-link!!!">
+                You dont play games? ;(<br>
+                Pick some!!!
+            </a>
+    {% endfor %}
 {#    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">Shortcuts</a>#}
 {#    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">Overview</a>#}
 {#    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">Events</a>#}

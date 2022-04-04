@@ -27,7 +27,18 @@ class HomeView(View):
     def get(self, request):
         profile_id = request.user.profile.id
         self.ctx['profile_id'] = profile_id
+        avatar = request.user.profile.avatar
+        self.ctx['avatar'] = avatar
+
         return render(request, "test.html", self.ctx)
+
+    # def get_img(request):
+    #     path = settings.MEDIA_ROOT
+    #     img_list = os.listdir(path + "/")
+    #     print(img_list[0])
+    #     base_image = "http://127.0.0.1:8000/media/images/" + img_list[0]
+    #     content = {"base_image": base_image}
+    #     return render(request, 'get_img.html', content)
 
 
 class LoginView(View):

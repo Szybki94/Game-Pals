@@ -1,5 +1,6 @@
 from django import forms
 from .models import Game, Profile
+from PIL import Image
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, SetPasswordForm
@@ -41,6 +42,7 @@ class RegisterForm(UserCreationForm):
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'form-control'
 
+
     def clean(self):
         cleaned_data = super().clean()
 
@@ -78,6 +80,16 @@ class UserUpdateForm1(forms.Form):
 class UserUpdateForm2(forms.Form):
     avatar = forms.ImageField(required=False, widget=forms.FileInput(attrs={'class': 'form-control-file'}))
     personal_info = forms.CharField(widget=forms.Textarea)
+
+    def save(self, *args, **kwargs):
+        super().save()
+
+        img = Image.open(self.avatar.path)
+
+        if img.height > 150 or img.width > 150:
+            new_img = (150, 150)
+            img.thumbnail(new_img)
+            img.save(self.avatar.path)
 
 # class Pizza2Form(forms.Form):
 #     size = forms.ChoiceField(label="Wielkość", choices=PIZZA_SIZES, widget=forms.Select)
