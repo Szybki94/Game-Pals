@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', null=True)
-    avatar = models.ImageField(default='/images/avatars/another_pepe_tY0Y6UL.jpg', upload_to="avatars")
+    avatar = models.ImageField(default='avatars/random_avatar.jpg', upload_to="avatars")
     personal_info = models.TextField(blank=True, null=True)
     friends = models.ManyToManyField(User, related_name='friends', blank=True)
 

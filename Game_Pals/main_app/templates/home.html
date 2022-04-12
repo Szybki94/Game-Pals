@@ -10,9 +10,10 @@
     <br><hr>
     <div class="text-center"><h3>{{ user.username }}</h3></div>
     <hr>
-    <img src="/images/{{ profile.avatar }}" alt="Avatar" class="avatar">
+    <img class="align-items-center" src="/images/{{ profile.avatar }}" alt="Avatar" class="avatar">
     <hr>
     <div class="text-center"><h4>Player games</h4></div>
+    <hr>
     {% for game in games %}
     <a class="list-group-item list-group-item-action list-group-item-light p-3" href="fill-me-with-link!!!">{{ game.name }}</a>
         {% empty %}
