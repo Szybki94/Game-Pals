@@ -17,8 +17,8 @@ class Group(models.Model):
 
 
 class UserGroup(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="usergroup")
-    group = models.ForeignKey(User, on_delete=models.CASCADE, related_name="group")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_groups")
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="user_groups")
     is_admin = models.BooleanField(default=False)
     is_extra_user = models.BooleanField(default=False)
 
@@ -28,3 +28,11 @@ class Game(models.Model):
     description = models.TextField(null=True)
     image = models.ImageField(blank=True, null=True)
     user = models.ManyToManyField(User, related_name='games')
+
+
+class Event(models.Model):
+    name = models.CharField(max_length=256)
+    description = models.TextField(null=True)
+    start_time = models.DateTimeField()
+    user = models.ManyToManyField(User, related_name="user_events")
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="group_events")

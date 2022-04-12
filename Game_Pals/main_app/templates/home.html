@@ -1,13 +1,15 @@
 {% extends "template.html" %}
 
 
+
 {% block title%}
     TEST
 {% endblock %}
 
 
 {% block left_menu %}
-    <br><hr>
+    <br>
+    <hr>
     <div class="text-center"><h3>{{ user.username }}</h3></div>
     <hr>
     <img class="align-items-center" src="/images/{{ profile.avatar }}" alt="Avatar" class="avatar">
@@ -47,5 +49,7 @@
 
 
 {% block content %}
+
+    {% include "calendar/calendar.html" %}
 
 {% endblock %}
