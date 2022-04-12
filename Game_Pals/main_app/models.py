@@ -6,9 +6,21 @@ from django.contrib.auth.models import User
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', null=True)
-    avatar = models.ImageField(default='random.jpg', upload_to="avatars")
+    avatar = models.ImageField(default='/images/avatars/another_pepe_tY0Y6UL.jpg', upload_to="avatars")
     personal_info = models.TextField(blank=True, null=True)
     friends = models.ManyToManyField(User, related_name='friends', blank=True)
+
+
+class Group(models.Model):
+    name = models.CharField(max_length=256)
+    is_active = models.BooleanField(default=True)
+
+
+class UserGroup(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="usergroup")
+    group = models.ForeignKey(User, on_delete=models.CASCADE, related_name="group")
+    is_admin = models.BooleanField(default=False)
+    is_extra_user = models.BooleanField(default=False)
 
 
 class Game(models.Model):

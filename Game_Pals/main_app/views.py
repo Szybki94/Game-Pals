@@ -21,24 +21,20 @@ class MainView(View):
         else:
             return redirect("login")
 
+
 class HomeView(View):
     ctx = {}
 
     def get(self, request):
-        profile_id = request.user.profile.id
-        self.ctx['profile_id'] = profile_id
-        avatar = request.user.profile.avatar
-        self.ctx['avatar'] = avatar
+        user = request.user
+        profile = user.profile
+        games = user.games.all()
+        self.ctx = {
+            "profile": profile,
+            "games": games,
+        }
 
-        return render(request, "test.html", self.ctx)
-
-    # def get_img(request):
-    #     path = settings.MEDIA_ROOT
-    #     img_list = os.listdir(path + "/")
-    #     print(img_list[0])
-    #     base_image = "http://127.0.0.1:8000/media/images/" + img_list[0]
-    #     content = {"base_image": base_image}
-    #     return render(request, 'get_img.html', content)
+        return render(request, "home.html", self.ctx)
 
 
 class LoginView(View):
@@ -135,17 +131,16 @@ class UserUpdateView2(View):
             messages.success(request, "Something went wrong, please try again")
             return render(request, "register_page_3.html", {"form": form})
 
-
     # def post(self, request):
 
-        # form = UserUpdateForm2(request.POST)
-        # ctx = {"form": form}
-        # if form.is_valid():
-        #     user = request.user
-        #     user.profile.avatar = form.cleaned_data['avatar']
-        #     user.profile.personal_info = form.cleaned_data['personal_info']
-        #     user.update()
-        #     return redirect("home")
-        # else:
-        #     messages.success(request, "Something went wrong, please try again")
-        #     return render(request, "register_page_3.html", ctx)
+    # form = UserUpdateForm2(request.POST)
+    # ctx = {"form": form}
+    # if form.is_valid():
+    #     user = request.user
+    #     user.profile.avatar = form.cleaned_data['avatar']
+    #     user.profile.personal_info = form.cleaned_data['personal_info']
+    #     user.update()
+    #     return redirect("home")
+    # else:
+    #     messages.success(request, "Something went wrong, please try again")
+    #     return render(request, "register_page_3.html", ctx)
