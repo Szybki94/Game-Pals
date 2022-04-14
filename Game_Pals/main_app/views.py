@@ -1,9 +1,6 @@
-# django moduls
+# django modules
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.decorators import (
-    login_required,
-)
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -13,13 +10,36 @@ from django.shortcuts import render, redirect
 from django.utils.safestring import mark_safe
 from django.views import generic, View
 
-# Python moduls
-from datetime import date, datetime
+# Python modules
+from datetime import date, datetime, timedelta
 
-# my moduls
+# my modules
+import calendar
 from .forms import LoginForm, RegisterForm, UserUpdateForm1, UserUpdateForm2
 from .models import Event, Game, Profile
 from .utils import Calendar
+
+
+def get_date(req_day):
+    if req_day:
+        year, month = (int(x) for x in req_day.split('-'))
+        return date(year, month, day=1)
+    return datetime.today()
+
+
+def prev_month(d):
+    first = d.replace(day=1)
+    prev_month = first - timedelta(days=1)
+    month = 'month=' + str(prev_month.year) + '-' + str(prev_month.month)
+    return month
+
+
+def next_month(d):
+    days_in_month = calendar.monthrange(d.year, d.month)[1]
+    last = d.replace(day=days_in_month)
+    next_month = last + timedelta(days=1)
+    month = 'month=' + str(next_month.year) + '-' + str(next_month.month)
+    return month
 
 
 class MainView(View):
@@ -28,27 +48,6 @@ class MainView(View):
             return redirect("home")
         else:
             return redirect("login")
-
-
-# class HomeView(View):
-#     ctx = {}
-#
-#     def get(self, request):
-#         user = request.user
-#         profile = user.profile
-#         games = user.games.all()
-#         self.ctx = {
-#             "profile": profile,
-#             "games": games,
-#         }
-#
-#         return render(request, "home.html", self.ctx)
-
-def get_date(req_day):
-    if req_day:
-        year, month = (int(x) for x in req_day.split('-'))
-        return date(year, month, day=1)
-    return datetime.today()
 
 
 class HomeView(generic.ListView):
@@ -70,6 +69,42 @@ class HomeView(generic.ListView):
         # Call the formatmonth method, which returns our calendar as a table
         html_cal = cal.formatmonth(withyear=True)
         context['calendar'] = mark_safe(html_cal)
+
+        # Previous and next month pass to context
+        d = get_date(self.request.GET.get('month', None))
+        context['prev_month'] = prev_month(d)
+        context['next_month'] = next_month(d)
+
+        return context
+
+
+class CalendarView(generic.ListView):
+    model = Event
+    template_name = 'home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
+        context['profile'] = self.request.user.profile
+        context['games'] = self.request.user.games.all()
+
+        # use today's date for the calendar
+        d = get_date(self.request.GET.get('day', None))
+
+        # Previous and next month pass to context
+        d = get_date(self.request.GET.get('month', None))
+        context['prev_month'] = prev_month(d)
+        context['next_month'] = next_month(d)
+
+        # Instantiate our calendar class with today's year and date
+        cal = Calendar(d.year, d.month)
+
+        # Call the formatmonth method, which returns our calendar as a table
+        html_cal = cal.formatmonth(withyear=True)
+        context['calendar'] = mark_safe(html_cal)
+
+        print(cal)
+
         return context
 
 
