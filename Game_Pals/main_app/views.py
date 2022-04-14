@@ -63,34 +63,6 @@ class HomeView(generic.ListView):
         # use today's date for the calendar
         d = get_date(self.request.GET.get('day', None))
 
-        # Instantiate our calendar class with today's year and date
-        cal = Calendar(d.year, d.month)
-
-        # Call the formatmonth method, which returns our calendar as a table
-        html_cal = cal.formatmonth(withyear=True)
-        context['calendar'] = mark_safe(html_cal)
-
-        # Previous and next month pass to context
-        d = get_date(self.request.GET.get('month', None))
-        context['prev_month'] = prev_month(d)
-        context['next_month'] = next_month(d)
-
-        return context
-
-
-class CalendarView(generic.ListView):
-    model = Event
-    template_name = 'home.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['user'] = self.request.user
-        context['profile'] = self.request.user.profile
-        context['games'] = self.request.user.games.all()
-
-        # use today's date for the calendar
-        d = get_date(self.request.GET.get('day', None))
-
         # Previous and next month pass to context
         d = get_date(self.request.GET.get('month', None))
         context['prev_month'] = prev_month(d)
@@ -102,8 +74,6 @@ class CalendarView(generic.ListView):
         # Call the formatmonth method, which returns our calendar as a table
         html_cal = cal.formatmonth(withyear=True)
         context['calendar'] = mark_safe(html_cal)
-
-        print(cal)
 
         return context
 
