@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.shortcuts import reverse
 
 
 # Create your models here.
@@ -35,4 +36,5 @@ class Event(models.Model):
     description = models.TextField(null=True)
     start_time = models.DateTimeField()
     user = models.ManyToManyField(User, related_name="user_events")
-    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="group_events")
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="group_events", null=True, blank=True)
+

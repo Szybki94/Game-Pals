@@ -1,5 +1,5 @@
 .calendar {
-  width: 98%;
+  width: 95%;
   margin: auto;
   font-size: 13px;
 }
@@ -46,6 +46,14 @@ a {
 }
 
 .btn {
+  outline: none;
+  color: black;
+  background-color: transparent;
+  box-shadow: 0 0 0 0;
+}
+
+.btn-center{
+  vertical-align: middle;
   outline: none;
   color: black;
   background-color: transparent;

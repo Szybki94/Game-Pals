@@ -4,9 +4,9 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.utils.safestring import mark_safe
 from django.views import generic, View
 
@@ -15,7 +15,7 @@ from datetime import date, datetime, timedelta
 
 # my modules
 import calendar
-from .forms import LoginForm, RegisterForm, UserUpdateForm1, UserUpdateForm2
+from .forms import LoginForm, RegisterForm, UserUpdateForm1, UserUpdateForm2, UserAddEventForm
 from .models import Event, Game, Profile
 from .utils import Calendar
 
@@ -93,7 +93,6 @@ class LoginView(View):
         user = authenticate(request, username=username, password=password)
         if user:
             login(request, user)
-            messages.success(request, "You logged in")
             return redirect("home")
         else:
             messages.error(request, form.errors)
@@ -164,6 +163,8 @@ class UserUpdateView2(View):
         if form.is_valid():
             profile = user.profile
             profile.avatar = form.cleaned_data["avatar"]
+            if not profile.avatar:
+                profile.avatar = 'avatars/random_avatar.jpg'
             profile.personal_info = form.cleaned_data["personal_info"]
             profile.save()
             messages.success(request, "Step 3/3 completed")
@@ -172,16 +173,13 @@ class UserUpdateView2(View):
             messages.success(request, "Something went wrong, please try again")
             return render(request, "register_page_3.html", {"form": form})
 
-    # def post(self, request):
 
-    # form = UserUpdateForm2(request.POST)
-    # ctx = {"form": form}
-    # if form.is_valid():
-    #     user = request.user
-    #     user.profile.avatar = form.cleaned_data['avatar']
-    #     user.profile.personal_info = form.cleaned_data['personal_info']
-    #     user.update()
-    #     return redirect("home")
-    # else:
-    #     messages.success(request, "Something went wrong, please try again")
-    #     return render(request, "register_page_3.html", ctx)
+class UserAddEventView(View):
+    def get(self, request):
+        ctx = {
+                'form': UserAddEventForm,
+                'user': request.user,
+                'profile': request.user.profile,
+                'games': request.user.games.all()
+               }
+        return render(request, 'User_add_event.html', ctx)

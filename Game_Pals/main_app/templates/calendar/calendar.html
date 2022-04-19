@@ -2,9 +2,13 @@
 
 {% block content %}
     <br>
+    <br>
     <div class="clearfix">
-	    <a class="btn btn-info left" href="{% url 'user_calendar' %}?{{ prev_month }}"> Previous Month </a>
-	    <a class="btn btn-info right" href="{% url 'user_calendar' %}?{{ next_month }}"> Next Month </a>
+	    <a class="btn btn-info float-start" href="{% url 'user_calendar' %}?{{ prev_month }}"> Previous Month </a>
+        <a class="btn btn-info float-end" href="{% url 'user_add_event' %}"> Add event </a>
+	    <a class="btn btn-info float-end" href="{% url 'user_calendar' %}?{{ next_month }}"> Next Month </a>
     </div>
+    <hr>
     {{ calendar }}
+
 {% endblock %}

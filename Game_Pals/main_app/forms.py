@@ -1,9 +1,15 @@
+# django modules
 from django import forms
-from .models import Game, Profile
-from PIL import Image
-from django.core.exceptions import ValidationError
-from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, SetPasswordForm
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.forms import ModelForm, DateInput
+
+# models
+from .models import Game, Profile, Event
+# utilities
+from PIL import Image
+
 
 
 class LoginForm(forms.ModelForm):
@@ -91,13 +97,11 @@ class UserUpdateForm2(forms.Form):
             img.thumbnail(new_img)
             img.save(self.avatar.path)
 
-# class Pizza2Form(forms.Form):
-#     size = forms.ChoiceField(label="Wielkość", choices=PIZZA_SIZES, widget=forms.Select)
-#     toppings = forms.MultipleChoiceField(label="Dodatki", widget=forms.CheckboxSelectMultiple)
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         choices = tuple( [ # Lista składana
-#             (topping.id, f'{topping.name} ({topping.price})') # Element to krotka z id i opisem
-#             for topping in Toppings.objects.all()
-#         ] )
-#         self.fields['toppings'].choices = choices
+
+class UserAddEventForm(ModelForm):
+    class Meta:
+        model = Event
+        fields = ['name', 'description', 'start_time']
+        widgets = {
+            'start_time': DateInput(format='%Y-%m-%dT%H:%M'),
+        }

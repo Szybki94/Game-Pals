@@ -3,7 +3,7 @@
 
 
 {% block title%}
-    Game-Pals Home
+    Add event
 {% endblock %}
 
 
@@ -52,6 +52,6 @@
 
 {% block content %}
 
-    {% include "calendar/calendar.html" %}
+    {{ form.as_p }}
 
 {% endblock %}
