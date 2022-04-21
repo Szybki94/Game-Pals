@@ -2,6 +2,7 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
+from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.http import HttpResponse, HttpResponseRedirect
@@ -16,7 +17,7 @@ from datetime import date, datetime, timedelta
 # my modules
 import calendar
 from .forms import LoginForm, RegisterForm, UserUpdateForm1, UserUpdateForm2, UserAddEventForm
-from .models import Event, Game, Profile
+from .models import Event, Game, UserGames, Profile
 from .utils import Calendar
 
 
@@ -69,7 +70,7 @@ class HomeView(generic.ListView):
         context['next_month'] = next_month(d)
 
         # Instantiate our calendar class with today's year and date
-        cal = Calendar(d.year, d.month)
+        cal = Calendar(self.request.user, d.year, d.month)
 
         # Call the formatmonth method, which returns our calendar as a table
         html_cal = cal.formatmonth(withyear=True)
@@ -177,9 +178,48 @@ class UserUpdateView2(View):
 class UserAddEventView(View):
     def get(self, request):
         ctx = {
-                'form': UserAddEventForm,
-                'user': request.user,
-                'profile': request.user.profile,
-                'games': request.user.games.all()
-               }
+            'form': UserAddEventForm,
+            'user': request.user,
+            'profile': request.user.profile,
+            'games': request.user.games.all()
+        }
         return render(request, 'User_add_event.html', ctx)
+
+
+class UserAddGamesView(View):
+    ctx = {"form": UserUpdateForm1}
+
+    def get(self, request):
+        return render(request, "add_games.html", self.ctx)
+
+    def post(self, request):
+        form = UserUpdateForm1(request.POST)
+        ctx = {'form': form}
+        if form.is_valid():
+            ctx['cleaned_data'] = form.cleaned_data
+            games_id = [int(game) for game in ctx['cleaned_data']['games']]
+            user = request.user
+            for game_id in games_id:
+                game = Game.objects.get(id=game_id)
+                user.games.add(game)
+            return redirect("home")
+        else:
+            return render(request, "add_games.html", {"form": form})
+
+
+class UserDeleteGameView(View):
+
+    def get(self, request, game_id):
+        form =
+        return render(request, "delete_games.html", {"form": form})
+
+    def post(self, request, game_id):
+        user = request.user
+        user_id = user.id
+        game_id = game_id
+        queryset = UserGames.objects.filter(
+            Q(user_id=user_id) & Q(game_id=game_id))
+
+
+
+

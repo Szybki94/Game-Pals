@@ -17,13 +17,19 @@
     <div class="text-center"><h4>Player games</h4></div>
     <hr>
     {% for game in games %}
-    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="fill-me-with-link!!!">{{ game.name }}</a>
+    <a class="list-group-item list-group-item-action" href="fill-me-with-link!!!">
+        {{ game.name }}<a class="text-end" methods="POST" href="/delete-games/{{ game.id }}">Delete</a>
+    </a>
+
         {% empty %}
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="fill-me-with-link!!!">
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'user_add_games' %}">
                 You dont play games? ;(<br>
                 Pick some!!!
             </a>
     {% endfor %}
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'user_add_games' %}">
+                Add more games
+            </a>
 
     {% if profile.personal_info %}
     <br>

@@ -28,7 +28,12 @@ class Game(models.Model):
     name = models.CharField(max_length=128)
     description = models.TextField(null=True)
     image = models.ImageField(blank=True, null=True)
-    user = models.ManyToManyField(User, related_name='games')
+    user = models.ManyToManyField(User, related_name='games', through='UserGames')
+
+
+class UserGames(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, null=True)
 
 
 class Event(models.Model):

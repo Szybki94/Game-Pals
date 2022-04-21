@@ -105,3 +105,9 @@ class UserAddEventForm(ModelForm):
         widgets = {
             'start_time': DateInput(format='%Y-%m-%dT%H:%M'),
         }
+
+
+# class UserGameDeleteForm(forms.Form):
+#     def get(self):
+
+
