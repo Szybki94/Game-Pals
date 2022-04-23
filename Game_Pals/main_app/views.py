@@ -7,7 +7,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.shortcuts import render, redirect, reverse, get_object_or_404
+from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.views import generic, View
 
@@ -16,7 +17,7 @@ from datetime import date, datetime, timedelta
 
 # my modules
 import calendar
-from .forms import LoginForm, RegisterForm, UserUpdateForm1, UserUpdateForm2, UserAddEventForm
+from .forms import LoginForm, RegisterForm, UserUpdateForm1, UserUpdateForm2, UserAddEventForm, UserGameDeleteForm
 from .models import Event, Game, UserGames, Profile
 from .utils import Calendar
 
@@ -59,7 +60,7 @@ class HomeView(generic.ListView):
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user
         context['profile'] = self.request.user.profile
-        context['games'] = self.request.user.games.all()
+        context['games'] = self.request.user.games.all().order_by('name')
 
         # use today's date for the calendar
         d = get_date(self.request.GET.get('day', None))
@@ -208,18 +209,59 @@ class UserAddGamesView(View):
 
 
 class UserDeleteGameView(View):
-
+    # Robię w taki sposób bo nie bardzo wiem jak utworzyć queryset pobierający UserGames id w DeleteView
     def get(self, request, game_id):
-        form =
-        return render(request, "delete_games.html", {"form": form})
+        context = {}
+        user = request.user
+        context['form'] = UserGameDeleteForm
+        context['user'] = request.user
+        context['profile'] = request.user.profile
+        context['games'] = request.user.games.all().order_by('name')
+        return render(request, "delete_games.html", context)
 
     def post(self, request, game_id):
-        user = request.user
-        user_id = user.id
+        form = UserGameDeleteForm(request.POST)
+        user_id = request.user.id
         game_id = game_id
-        queryset = UserGames.objects.filter(
-            Q(user_id=user_id) & Q(game_id=game_id))
+        if form.is_valid():
+            # Sposób poniżej otrzymam słownik, ale tylko z jedną pozycją spełniającą warunek User.id + Game.id
+            # w taki sposób mogę wymusić na formularzu usunięcie odpowiedniej relacji w tabeli UserGames
+            queryset = UserGames.objects.filter(Q(game_id=game_id) & Q(user_id=user_id))
+            user_game_id = queryset[0].id
+            UserGames.objects.filter(id=user_game_id).delete()
+            return redirect('home')
 
 
+class UserSearchView(View):
+
+    def get(self, request):
+        context = {}
+        context['user'] = self.request.user
+        context['profile'] = self.request.user.profile
+        context['games'] = self.request.user.games.all().order_by('name')
+        return render(request, "user_search.html", context)
+
+    def post(self, request):
+        context = {}
+        context['user'] = self.request.user
+        context['profile'] = self.request.user.profile
+        context['games'] = self.request.user.games.all().order_by('name')
+        query = self.request.POST.get('username')
+        searched_users = User.objects.filter(username__contains=query)
+        message = "There is no search results"
+        context['users'] = searched_users
+        context['message'] = message
+        return render(request, "user_search.html", context)
 
 
+# class UserSearchView(generic.ListView):
+#     template_name = "user_search.html"
+#     model = User
+#
+#     def get_queryset(self):
+#         query = self.request.GET('username')
+#         if query:
+#             searched_users = User.objects.filter(username__contains=query)
+#         else:
+#             searched_users = User.objects.none()
+#         return searched_users

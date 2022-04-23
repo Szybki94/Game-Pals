@@ -6,10 +6,9 @@ from django.core.exceptions import ValidationError
 from django.forms import ModelForm, DateInput
 
 # models
-from .models import Game, Profile, Event
+from .models import Game, UserGames, Profile, Event
 # utilities
 from PIL import Image
-
 
 
 class LoginForm(forms.ModelForm):
@@ -31,9 +30,6 @@ class LoginForm(forms.ModelForm):
         return cleaned_data
 
 
-
-
-
 class RegisterForm(UserCreationForm):
     class Meta:
         model = User
@@ -47,7 +43,6 @@ class RegisterForm(UserCreationForm):
         super(RegisterForm, self).__init__(*args, **kwargs)
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'form-control'
-
 
     def clean(self):
         cleaned_data = super().clean()
@@ -107,7 +102,11 @@ class UserAddEventForm(ModelForm):
         }
 
 
-# class UserGameDeleteForm(forms.Form):
-#     def get(self):
+class UserGameDeleteForm(forms.Form):
+    class Meta:
+        model = UserGames
+        fields = ['id']
+
+
 
 

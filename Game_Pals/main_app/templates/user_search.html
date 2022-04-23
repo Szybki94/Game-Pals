@@ -18,7 +18,7 @@
     <hr>
     {% for game in games %}
     <a class="list-group-item list-group-item-action" href="fill-me-with-link!!!">
-        {{ game.name }}
+        {{ game.name }}<a class="text-end" methods="POST" href="/delete-games/{{ game.id }}">Delete</a>
     </a>
 
         {% empty %}
@@ -51,6 +51,9 @@
 {% block dropdown_menu %}
     <a class="dropdown-item" href="#!">Groups</a>
     <a class="dropdown-item" href="#!">Pals</a>
+    <div class="dropdown-divider"></div>
+    <a class="dropdown-item" href="#!">Search for Pal</a>
+
 {#    <div class="dropdown-divider"></div>#}
 {#    <a class="dropdown-item" href="#!">Something else here</a>#}
 {% endblock %}
@@ -58,13 +61,21 @@
 
 {% block content %}
 
-    <form action="" method="POST">
-        {% csrf_token %}
-        {{ form }}
-        <br>
-        <br>
-        <br>
-        <input type="submit" name="submit" class="btn btn-warning btn-md" value="Delete game CONFIRM">
+    <form method="POST" action="">
+    {% csrf_token %}
+        <label for="username" class="text-info">Username:</label><br>
+        <input type="text" name="username" id="username" class="form-control">
+        <input type="submit" name="submit" class="btn btn-info btn-md" value="Search">
     </form>
+    <br>
+    {% for user in users %}
+    <a class="list-group-item list-group-item-action" href="{% url 'user_search' %}{{ user.id }}">
+        {{ user.username }}
+{#        <a class="text-end" methods="POST" href="/delete-games/{{ game.id }}">Delete</a>#}
+    </a>
+
+        {% empty %}
+            {{ message }}
+    {% endfor %}
 
 {% endblock %}

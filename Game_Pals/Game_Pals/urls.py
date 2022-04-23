@@ -20,7 +20,7 @@ from django.conf.urls.static import static
 from django.urls import path
 from django.contrib.auth.decorators import login_required
 from main_app.views import MainView, HomeView, LoginView, RegisterView, UserUpdateView1, \
-    UserUpdateView2, UserAddEventView, UserAddGamesView, UserDeleteGameView
+    UserUpdateView2, UserAddEventView, UserAddGamesView, UserDeleteGameView, UserSearchView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -34,6 +34,7 @@ urlpatterns = [
     path('update-user-2/', login_required(UserUpdateView2.as_view()), name="user-update-2"),
     path('add-games/', login_required(UserAddGamesView.as_view()), name="user_add_games"),
     path('delete-games/<int:game_id>/', login_required(UserDeleteGameView.as_view()), name="user_delete_games"),
+    path('user-search/', login_required(UserSearchView.as_view()), name="user_search"),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
