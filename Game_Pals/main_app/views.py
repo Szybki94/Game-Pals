@@ -58,9 +58,6 @@ class HomeView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['user'] = self.request.user
-        context['profile'] = self.request.user.profile
-        context['games'] = self.request.user.games.all().order_by('name')
 
         # use today's date for the calendar
         d = get_date(self.request.GET.get('day', None))
@@ -81,12 +78,11 @@ class HomeView(generic.ListView):
 
 
 class LoginView(View):
-    ctx = {"form": LoginForm}
 
     def get(self, request):
         if request.user.is_authenticated:
             return redirect("home")
-        return render(request, "login_page.html", self.ctx)
+        return render(request, "login_page.html", {'form': LoginForm})
 
     def post(self, request):
         form = LoginForm(request.POST)
@@ -95,10 +91,11 @@ class LoginView(View):
         user = authenticate(request, username=username, password=password)
         if user:
             login(request, user)
+            messages.success(request, "You logged in")
             return redirect("home")
         else:
             messages.error(request, form.errors)
-            return render(request, "login_page.html", self.ctx)
+            return render(request, "login_page.html", {})
 
 
 class RegisterView(View):
@@ -178,13 +175,7 @@ class UserUpdateView2(View):
 
 class UserAddEventView(View):
     def get(self, request):
-        ctx = {
-            'form': UserAddEventForm,
-            'user': request.user,
-            'profile': request.user.profile,
-            'games': request.user.games.all()
-        }
-        return render(request, 'User_add_event.html', ctx)
+        return render(request, 'User_add_event.html', {'form': UserAddEventForm})
 
 
 class UserAddGamesView(View):
@@ -214,9 +205,6 @@ class UserDeleteGameView(View):
         context = {}
         user = request.user
         context['form'] = UserGameDeleteForm
-        context['user'] = request.user
-        context['profile'] = request.user.profile
-        context['games'] = request.user.games.all().order_by('name')
         return render(request, "delete_games.html", context)
 
     def post(self, request, game_id):
@@ -236,16 +224,10 @@ class UserSearchView(View):
 
     def get(self, request):
         context = {}
-        context['user'] = self.request.user
-        context['profile'] = self.request.user.profile
-        context['games'] = self.request.user.games.all().order_by('name')
         return render(request, "user_search.html", context)
 
     def post(self, request):
         context = {}
-        context['user'] = self.request.user
-        context['profile'] = self.request.user.profile
-        context['games'] = self.request.user.games.all().order_by('name')
         query = self.request.POST.get('username')
         searched_users = User.objects.filter(username__contains=query)
         message = "There is no search results"
