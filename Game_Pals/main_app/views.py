@@ -2,6 +2,7 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
+from django.db import transaction
 from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -177,6 +178,24 @@ class UserAddEventView(View):
     def get(self, request):
         return render(request, 'User_add_event.html', {'form': UserAddEventForm})
 
+    def post(self, request):
+        user = request.user
+        title = request.POST.get('name')
+        description = request.POST.get('description')
+        start_time = request.POST.get('start_time')
+        # Queryset dla utworzenia Eventu (atomic, bo chcę żeby wszystko poleciało razem
+        with transaction.atomic():
+            new_event = Event.objects.create(name=title, description=description, start_time=start_time)
+            # Połączenie eventu z użytkownikiem
+            user.user_events.add(Event.objects.get(id=new_event.id))
+        return redirect('home')
+
+        # return HttpResponse(f'''<h1>Wyniki</h1><br>
+        # Username: {user.username}<br>
+        # Title:\t{title}<br>
+        # Description:\t{description}<br>
+        # Start Time:\t{start_time}''')
+
 
 class UserAddGamesView(View):
     ctx = {"form": UserUpdateForm1}
@@ -234,7 +253,6 @@ class UserSearchView(View):
         context['users'] = searched_users
         context['message'] = message
         return render(request, "user_search.html", context)
-
 
 # class UserSearchView(generic.ListView):
 #     template_name = "user_search.html"

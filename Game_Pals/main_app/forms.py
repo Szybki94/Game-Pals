@@ -93,13 +93,25 @@ class UserUpdateForm2(forms.Form):
             img.save(self.avatar.path)
 
 
+# class UserAddEventForm(ModelForm):
+#     class Meta:
+#         model = Event
+#         fields = ['name', 'description', 'start_time']
+#         widgets = {
+#             'start_time': DateInput(format='%Y-%m-%dT%H:%M'),
+#         }
+
 class UserAddEventForm(ModelForm):
     class Meta:
         model = Event
         fields = ['name', 'description', 'start_time']
-        widgets = {
-            'start_time': DateInput(format='%Y-%m-%dT%H:%M'),
-        }
+        widgets = {"start_time": forms.DateTimeInput(format='%Y-%m-%dT%H:%M',
+                                                     attrs={'class': 'form-control datetimepicker-input',
+                                                            'data-target': '#datetimepicker1'}),
+                   "name": forms.TextInput(attrs={"class": "form-control"}),
+                   "description": forms.Textarea(attrs={"class": "form-control"})
+                   }
+
 
 
 class UserGameDeleteForm(forms.Form):
