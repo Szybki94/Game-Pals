@@ -93,14 +93,6 @@ class UserUpdateForm2(forms.Form):
             img.save(self.avatar.path)
 
 
-# class UserAddEventForm(ModelForm):
-#     class Meta:
-#         model = Event
-#         fields = ['name', 'description', 'start_time']
-#         widgets = {
-#             'start_time': DateInput(format='%Y-%m-%dT%H:%M'),
-#         }
-
 class UserAddEventForm(ModelForm):
     class Meta:
         model = Event
@@ -113,12 +105,7 @@ class UserAddEventForm(ModelForm):
                    }
 
 
-
 class UserGameDeleteForm(forms.Form):
     class Meta:
         model = UserGames
         fields = ['id']
-
-
-
-

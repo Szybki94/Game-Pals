@@ -8,7 +8,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 from django.views import generic, View
@@ -190,12 +190,6 @@ class UserAddEventView(View):
             user.user_events.add(Event.objects.get(id=new_event.id))
         return redirect('home')
 
-        # return HttpResponse(f'''<h1>Wyniki</h1><br>
-        # Username: {user.username}<br>
-        # Title:\t{title}<br>
-        # Description:\t{description}<br>
-        # Start Time:\t{start_time}''')
-
 
 class UserAddGamesView(View):
     ctx = {"form": UserUpdateForm1}
@@ -254,14 +248,18 @@ class UserSearchView(View):
         context['message'] = message
         return render(request, "user_search.html", context)
 
-# class UserSearchView(generic.ListView):
-#     template_name = "user_search.html"
-#     model = User
-#
-#     def get_queryset(self):
-#         query = self.request.GET('username')
-#         if query:
-#             searched_users = User.objects.filter(username__contains=query)
-#         else:
-#             searched_users = User.objects.none()
-#         return searched_users
+class EventDetailsView(DeleteView):
+    template_name = "event_detail.html"
+
+    # Nadpisanie funkcji zwracającej obiek, ponieważ nie chce w URL'u mieć <int: pk>, bo brzydko wygląda :P
+    def get_object(self):
+        id_url = self.kwargs.get("event_id")
+        return get_object_or_404(Event, id=id_url)
+
+    # def get(self, request, event_id):
+    #     return HttpResponse(f'''<h1>Gratuluję wszedłeś GETem na próbny event-detail view ;)</h1><br>
+    #     <h2>Twój event id to:\t{event_id}''')
+    #
+    # # Z POST'a póki co nie zamierzam korzystać, ale niech sobie będzie ;D
+    # def post(self, request):
+    #     return HttpResponse("Może kiedyś na tym widoku metoda post się przyda :P")
