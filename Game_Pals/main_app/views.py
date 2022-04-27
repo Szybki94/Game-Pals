@@ -248,13 +248,23 @@ class UserSearchView(View):
         context['message'] = message
         return render(request, "user_search.html", context)
 
-class EventDetailsView(DeleteView):
+
+class EventDetailsView(generic.DetailView):
     template_name = "event_detail.html"
 
     # Nadpisanie funkcji zwracającej obiek, ponieważ nie chce w URL'u mieć <int: pk>, bo brzydko wygląda :P
     def get_object(self):
         id_url = self.kwargs.get("event_id")
         return get_object_or_404(Event, id=id_url)
+
+
+class UserDetailsView(generic.DetailView):
+    model = User
+    template_name = "user_detail.html"
+
+    def get_object(self):
+        id_url = self.kwargs.get("user_id")
+        return get_object_or_404(User, id=id_url)
 
     # def get(self, request, event_id):
     #     return HttpResponse(f'''<h1>Gratuluję wszedłeś GETem na próbny event-detail view ;)</h1><br>
