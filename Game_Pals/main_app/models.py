@@ -12,6 +12,12 @@ class Profile(models.Model):
     friends = models.ManyToManyField(User, related_name='friends', blank=True)
 
 
+class Invitation(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="receiver")
+    accepted = models.BooleanField(default=False)
+
+
 class Group(models.Model):
     name = models.CharField(max_length=256)
     is_active = models.BooleanField(default=True)
@@ -42,4 +48,3 @@ class Event(models.Model):
     start_time = models.DateTimeField()
     user = models.ManyToManyField(User, related_name="user_events")
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="group_events", null=True, blank=True)
-
