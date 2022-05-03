@@ -20,7 +20,7 @@ from datetime import date, datetime, timedelta
 import calendar
 from .forms import LoginForm, RegisterForm, UserUpdateForm1, UserUpdateForm2, UserAddEventForm, UserGameDeleteForm, \
     SendFriendInvitationForm
-from .models import Event, Game, UserGames, Profile
+from .models import Event, Game, UserGames, Profile, Invitation
 from .utils import Calendar
 
 
@@ -268,8 +268,11 @@ class UserDetailsView(View):
         context['form'] = SendFriendInvitationForm
         return render(request, "user_detail.html", context)
 
-    def post(self, request):
-
+    def post(self, request, user_id):
+        form = SendFriendInvitationForm(request.POST)
+        if form.is_valid():
+            Invitation.objects.create(sender_id=request.user.id, receiver_id=user_id)
+        return redirect("home")
 # class UserDetailsView(generic.DetailView):
 #     model = User
 #     template_name = "user_detail.html"
