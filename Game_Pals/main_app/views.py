@@ -18,7 +18,8 @@ from datetime import date, datetime, timedelta
 
 # my modules
 import calendar
-from .forms import LoginForm, RegisterForm, UserUpdateForm1, UserUpdateForm2, UserAddEventForm, UserGameDeleteForm
+from .forms import LoginForm, RegisterForm, UserUpdateForm1, UserUpdateForm2, UserAddEventForm, UserGameDeleteForm, \
+    SendFriendInvitationForm
 from .models import Event, Game, UserGames, Profile
 from .utils import Calendar
 
@@ -258,18 +259,29 @@ class EventDetailsView(generic.DetailView):
         return get_object_or_404(Event, id=id_url)
 
 
-class UserDetailsView(generic.DetailView):
-    model = User
-    template_name = "user_detail.html"
+class UserDetailsView(View):
 
-    def get_object(self):
-        id_url = self.kwargs.get("user_id")
-        return get_object_or_404(User, id=id_url)
+    def get(self, request, user_id):
+        context = {}
+        user = request.user
+        context['searched_user'] = User.objects.get(id=user_id)
+        context['form'] = SendFriendInvitationForm
+        return render(request, "user_detail.html", context)
 
-    # def get(self, request, event_id):
-    #     return HttpResponse(f'''<h1>Gratuluję wszedłeś GETem na próbny event-detail view ;)</h1><br>
-    #     <h2>Twój event id to:\t{event_id}''')
-    #
-    # # Z POST'a póki co nie zamierzam korzystać, ale niech sobie będzie ;D
-    # def post(self, request):
-    #     return HttpResponse("Może kiedyś na tym widoku metoda post się przyda :P")
+    def post(self, request):
+
+# class UserDetailsView(generic.DetailView):
+#     model = User
+#     template_name = "user_detail.html"
+#
+#     def get_object(self):
+#         id_url = self.kwargs.get("user_id")
+#         return get_object_or_404(User, id=id_url)
+
+# def get(self, request, event_id):
+#     return HttpResponse(f'''<h1>Gratuluję wszedłeś GETem na próbny event-detail view ;)</h1><br>
+#     <h2>Twój event id to:\t{event_id}''')
+#
+# # Z POST'a póki co nie zamierzam korzystać, ale niech sobie będzie ;D
+# def post(self, request):
+#     return HttpResponse("Może kiedyś na tym widoku metoda post się przyda :P")

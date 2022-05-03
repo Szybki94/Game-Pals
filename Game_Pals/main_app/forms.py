@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.forms import ModelForm, DateInput
 
 # models
-from .models import Game, UserGames, Profile, Event
+from .models import Game, UserGames, Profile, Event, Invitation
 # utilities
 from PIL import Image
 
@@ -109,3 +109,9 @@ class UserGameDeleteForm(forms.Form):
     class Meta:
         model = UserGames
         fields = ['id']
+
+
+class SendFriendInvitationForm(forms.Form):
+    class Meta:
+        model = Invitation
+        fields = ['sender', 'receiver']

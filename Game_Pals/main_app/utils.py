@@ -13,7 +13,7 @@ class Calendar(HTMLCalendar):
     # formats a day as a td
     # filter events by day
     def formatday(self, day, events):
-        events_per_day = events.filter(start_time__day=day)
+        events_per_day = events.filter(start_time__day=day).order_by('start_time')
         d = ""
         for event in events_per_day:
             d += f'''<li><a href="/event-details/{event.id}"> {event.name} </a></li>'''

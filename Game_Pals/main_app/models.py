@@ -15,7 +15,7 @@ class Profile(models.Model):
 class Invitation(models.Model):
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
     receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="receiver")
-    accepted = models.BooleanField(default=False)
+    accepted = models.BooleanField(null=True)
 
 
 class Group(models.Model):
