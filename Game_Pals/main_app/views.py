@@ -1,6 +1,6 @@
 # django modules
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.db.models import Q
@@ -98,6 +98,12 @@ class LoginView(View):
         else:
             messages.error(request, form.errors)
             return render(request, "login_page.html", {})
+
+
+class LogoutView(View):
+    def get(self, request):
+        logout(request)
+        return redirect("home")
 
 
 class RegisterView(View):
@@ -273,6 +279,29 @@ class UserDetailsView(View):
         if form.is_valid():
             Invitation.objects.create(sender_id=request.user.id, receiver_id=user_id)
         return redirect("home")
+
+
+class FriendRequestsView(View):
+    def get(self, request):
+        context = {}
+        context['user_friend_requests'] = Invitation.objects.filter(Q(receiver_id=request.user.id) & Q(accepted__isnull=True))
+        return render(request, "friend_requests.html", context)
+
+    def post(self, request):
+        context = {}
+        context['user_friend_requests'] = Invitation.objects.filter(Q(receiver_id=request.user.id) & Q(accepted__isnull=True))
+        relationship = Invitation.objects.get(id=request.POST.get('friend_request'))
+        if request.POST.get('answer') == "Submit":
+            relationship.accepted = 1
+            relationship.save()
+            return redirect('friend_requests')
+        elif request.POST.get('answer') == "Decline":
+            relationship.delete()
+            return redirect('friend_requests')
+        # elif request.POST.get('answer') == "Decline":
+        #     relationship.delete()
+        #     return redirect('friend_requests')
+
 # class UserDetailsView(generic.DetailView):
 #     model = User
 #     template_name = "user_detail.html"
