@@ -285,17 +285,18 @@ class FriendRequestsView(View):
     def get(self, request):
         context = {}
         context['user_friend_requests'] = Invitation.objects.filter(Q(receiver_id=request.user.id) & Q(accepted__isnull=True))
+        context['user_sent_requests'] = Invitation.objects.filter(Q(sender_id=request.user.id) & Q(accepted__isnull=True))
         return render(request, "friend_requests.html", context)
 
     def post(self, request):
         context = {}
         context['user_friend_requests'] = Invitation.objects.filter(Q(receiver_id=request.user.id) & Q(accepted__isnull=True))
-        relationship = Invitation.objects.get(id=request.POST.get('friend_request'))
+        relationship = Invitation.objects.get(id=request.POST.get('request'))
         if request.POST.get('answer') == "Submit":
             relationship.accepted = 1
             relationship.save()
             return redirect('friend_requests')
-        elif request.POST.get('answer') == "Decline":
+        elif request.POST.get('answer') == "Decline" or "Cancel":
             relationship.delete()
             return redirect('friend_requests')
         # elif request.POST.get('answer') == "Decline":
