@@ -19,8 +19,8 @@ from datetime import date, datetime, timedelta
 # my modules
 import calendar
 from .forms import LoginForm, RegisterForm, UserUpdateForm1, UserUpdateForm2, UserAddEventForm, UserGameDeleteForm, \
-    SendFriendInvitationForm
-from .models import Event, Game, UserGames, Profile, Invitation
+    SendFriendInvitationForm, CreateGroupForm
+from .models import Event, Game, UserGames, Profile, Invitation, Group, UserGroup
 from .utils import Calendar
 
 
@@ -284,13 +284,16 @@ class UserDetailsView(View):
 class FriendRequestsView(View):
     def get(self, request):
         context = {}
-        context['user_friend_requests'] = Invitation.objects.filter(Q(receiver_id=request.user.id) & Q(accepted__isnull=True))
-        context['user_sent_requests'] = Invitation.objects.filter(Q(sender_id=request.user.id) & Q(accepted__isnull=True))
+        context['user_friend_requests'] = Invitation.objects.filter(
+            Q(receiver_id=request.user.id) & Q(accepted__isnull=True))
+        context['user_sent_requests'] = Invitation.objects.filter(
+            Q(sender_id=request.user.id) & Q(accepted__isnull=True))
         return render(request, "friend_requests.html", context)
 
     def post(self, request):
         context = {}
-        context['user_friend_requests'] = Invitation.objects.filter(Q(receiver_id=request.user.id) & Q(accepted__isnull=True))
+        context['user_friend_requests'] = Invitation.objects.filter(
+            Q(receiver_id=request.user.id) & Q(accepted__isnull=True))
         relationship = Invitation.objects.get(id=request.POST.get('request'))
         if request.POST.get('answer') == "Submit":
             relationship.accepted = 1
@@ -299,6 +302,27 @@ class FriendRequestsView(View):
         elif request.POST.get('answer') == "Decline" or "Cancel":
             relationship.delete()
             return redirect('friend_requests')
+
+
+class GroupCreateView(generic.CreateView):
+    template_name = "create_group.html"
+    form_class = CreateGroupForm
+    #  Do zmiany, chcę później przekierować na listę grup, w których jest gracz :)
+    success_url = "../home"
+
+    # Nadpisuję inicjację formularza Django z wypełnionym polem create_by
+    def get_initial(self):
+        self.initial.update({'created_by': self.request.user})
+        return self.initial
+
+
+
+@receiver(post_save, sender=Group)
+def create_usergroup(sender, instance, created, **kwargs):
+    # instance == Group w group stworzyłem FK do User'a, żeby przemycić jego PK do wypełnienia
+    if created:
+        UserGroup.objects.create(group=instance, user_id=instance.created_by.id, is_admin=1, is_extra_user=1)
+
         # elif request.POST.get('answer') == "Decline":
         #     relationship.delete()
         #     return redirect('friend_requests')

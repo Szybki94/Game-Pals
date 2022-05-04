@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.forms import ModelForm, DateInput
 
 # models
-from .models import Game, UserGames, Profile, Event, Invitation
+from .models import Game, UserGames, Profile, Event, Invitation, Group
 # utilities
 from PIL import Image
 
@@ -115,3 +115,11 @@ class SendFriendInvitationForm(forms.Form):
     class Meta:
         model = Invitation
         fields = ['sender', 'receiver']
+
+
+class CreateGroupForm(forms.ModelForm):
+    class Meta:
+        model = Group
+        fields = ['name', 'created_by']
+        widgets = {'name': forms.TextInput(attrs={'class': 'form-control'}),
+                   'created_by': forms.HiddenInput}
