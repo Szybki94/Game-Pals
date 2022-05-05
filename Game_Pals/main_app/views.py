@@ -323,6 +323,21 @@ def create_usergroup(sender, instance, created, **kwargs):
     if created:
         UserGroup.objects.create(group=instance, user_id=instance.created_by.id, is_admin=1, is_extra_user=1)
 
+
+class UserGroupsView(generic.ListView):
+    model = UserGroup
+    template_name = "groups_list.html"
+
+    def get_queryset(self):
+        queryset = super(UserGroupsView, self).get_queryset()
+        queryset = queryset.filter(user_id=self.request.user.id)
+        return queryset
+
+
+class GroupDetailView(View):
+    def get(self, request, group_id):
+        return HttpResponse('''Tu będzie widok szczegółów grupy wraz z jej kalendarzemi<br>
+                            i możliwością dodawania komentarzy<br>''')
         # elif request.POST.get('answer') == "Decline":
         #     relationship.delete()
         #     return redirect('friend_requests')

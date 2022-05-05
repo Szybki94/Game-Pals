@@ -18,10 +18,13 @@
 
 
 {% block dropdown_menu %}
-{#    <a class="dropdown-item" href="#!">Groups</a>#}
-{#    <a class="dropdown-item" href="#!">Pals</a>#}
-{#    <div class="dropdown-divider"></div>#}
-{#    <a class="dropdown-item" href="#!">Something else here</a>#}
+    <a class="dropdown-item" href="{% url 'user_groups' %}">Groups</a>
+    <a class="dropdown-item" href="#!">Pals</a>
+    <div class="dropdown-divider"></div>
+    <a class="dropdown-item" href="{% url 'user_search' %}">Search for Pal</a>
+    <a class="dropdown-item" href="{% url 'create_group' %}">Create Group</a>
+    <div class="dropdown-divider"></div>
+     <a class="dropdown-item" href="{% url 'logout' %}">LOGOUT</a>
 {% endblock %}
 
 

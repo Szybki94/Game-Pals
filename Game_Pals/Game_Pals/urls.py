@@ -21,7 +21,8 @@ from django.urls import path
 from django.contrib.auth.decorators import login_required
 from main_app.views import MainView, HomeView, LoginView, RegisterView, UserUpdateView1, \
     UserUpdateView2, UserAddEventView, UserAddGamesView, UserDeleteGameView, UserSearchView,\
-    EventDetailsView, UserDetailsView, LogoutView, FriendRequestsView, GroupCreateView
+    EventDetailsView, UserDetailsView, LogoutView, FriendRequestsView, GroupCreateView, \
+    UserGroupsView, GroupDetailView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -40,7 +41,9 @@ urlpatterns = [
     path('event-details/<int:event_id>/', login_required(EventDetailsView.as_view()), name='event_details'),
     path('user-search/<int:user_id>/', login_required(UserDetailsView.as_view()), name='user_details'),
     path('friend-requests/', login_required(FriendRequestsView.as_view()), name='friend_requests'),
-    path('create-group/', login_required(GroupCreateView.as_view()), name='create_group')
+    path('create-group/', login_required(GroupCreateView.as_view()), name='create_group'),
+    path('user-groups/', login_required(UserGroupsView.as_view()), name='user_groups'),
+    path('group-details/<int:group_id>/', login_required(GroupDetailView.as_view()), name='group-details')
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
