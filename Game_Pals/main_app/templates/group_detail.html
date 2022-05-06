@@ -1,0 +1,49 @@
+{% extends "template.html" %}
+
+
+
+{% block title%}
+    Group - details
+{% endblock %}
+
+
+{% block left_menu %}
+    <br>
+    <hr>
+    <div class="text-center"><h3>{{ group.name }}</h3></div>
+    <hr>
+    <div class="text-center"><h4>Group members</h4></div>
+    <hr>
+    {% for member in group_members %}
+    <a class="list-group-item list-group-item-action" href="fill-me-with-link!!!">
+        {{ member.user.username }} -
+        {% if member.is_admin == 1 and member.is_extra_user == 0 %}
+                Admin
+            {% endif %}
+            {% if member.is_admin == 1 and member.is_extra_user == 1 %}
+                Admin
+            {% endif %}
+            {% if member.is_extra_user == 1 and member.is_admin == 0 %}
+                Extra
+            {% endif %}
+            {% if member.is_admin == 0 and member.is_extra_user == 0 %}
+                Normal
+            {% endif %}
+        <a class="text-end" methods="POST" href="!#">Update</a>
+    </a>
+
+    {% endfor %}
+
+
+{% endblock %}
+
+
+{#{% block dropdown_menu %}#}
+{#{% endblock %}#}
+
+
+{% block content %}
+
+    Tu będzie miejsce na kalendarz grupowy + komentarze
+
+{% endblock %}

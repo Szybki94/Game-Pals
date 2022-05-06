@@ -316,7 +316,6 @@ class GroupCreateView(generic.CreateView):
         return self.initial
 
 
-
 @receiver(post_save, sender=Group)
 def create_usergroup(sender, instance, created, **kwargs):
     # instance == Group w group stworzyłem FK do User'a, żeby przemycić jego PK do wypełnienia
@@ -334,26 +333,17 @@ class UserGroupsView(generic.ListView):
         return queryset
 
 
+# class GroupDetailView(View):
+#     def get(self, request, group_id):
+#         return HttpResponse('''Tu będzie widok szczegółów grupy wraz z jej kalendarzemi<br>
+#                             i możliwością dodawania komentarzy<br>''')
+
+
 class GroupDetailView(View):
+    html = "group_detail.html"  # do zrobienia
+    context = {}
+
     def get(self, request, group_id):
-        return HttpResponse('''Tu będzie widok szczegółów grupy wraz z jej kalendarzemi<br>
-                            i możliwością dodawania komentarzy<br>''')
-        # elif request.POST.get('answer') == "Decline":
-        #     relationship.delete()
-        #     return redirect('friend_requests')
-
-# class UserDetailsView(generic.DetailView):
-#     model = User
-#     template_name = "user_detail.html"
-#
-#     def get_object(self):
-#         id_url = self.kwargs.get("user_id")
-#         return get_object_or_404(User, id=id_url)
-
-# def get(self, request, event_id):
-#     return HttpResponse(f'''<h1>Gratuluję wszedłeś GETem na próbny event-detail view ;)</h1><br>
-#     <h2>Twój event id to:\t{event_id}''')
-#
-# # Z POST'a póki co nie zamierzam korzystać, ale niech sobie będzie ;D
-# def post(self, request):
-#     return HttpResponse("Może kiedyś na tym widoku metoda post się przyda :P")
+        self.context['group'] = Group.objects.get(id=group_id)
+        self.context['group_members'] = UserGroup.objects.filter(group_id=group_id)
+        return render(request, self.html, self.context)
