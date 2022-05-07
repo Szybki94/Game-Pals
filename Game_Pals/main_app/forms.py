@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.forms import ModelForm, DateInput
 
 # models
-from .models import Game, UserGames, Profile, Event, Invitation, Group
+from .models import Game, UserGames, Profile, Event, Invitation, Group, Comment
 # utilities
 from PIL import Image
 
@@ -123,3 +123,15 @@ class CreateGroupForm(forms.ModelForm):
         fields = ['name', 'created_by']
         widgets = {'name': forms.TextInput(attrs={'class': 'form-control'}),
                    'created_by': forms.HiddenInput}
+
+
+class GroupCommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content']
+        labels = {
+            'content': "Leave your comment:"
+        }
+        widgets = {
+            'content': forms.Textarea(attrs={'class': 'form-control'})
+                    }

@@ -53,6 +53,10 @@ class Event(models.Model):
     user = models.ManyToManyField(User, related_name="user_events")
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="group_events", null=True, blank=True)
 
+    def __str__(self):
+        text = "{0:40s} - {1:10d}"
+        return text.format(self.name, self.id)  # to formatowanie nie działa w wyświetlaniu napisu na admin ;(
+
 
 class Comment(models.Model):
     content = models.TextField()
@@ -60,4 +64,5 @@ class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_comments")
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="group_comments")
 
-
+    def __str__(self):
+        return f"{self.create_date.strftime('%d/%m/%Y, %H:%M')} - {self.group_id}"

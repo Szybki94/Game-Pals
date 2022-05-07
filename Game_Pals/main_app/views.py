@@ -10,6 +10,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views import generic, View
 
@@ -19,7 +20,7 @@ from datetime import date, datetime, timedelta
 # my modules
 import calendar
 from .forms import LoginForm, RegisterForm, UserUpdateForm1, UserUpdateForm2, UserAddEventForm, UserGameDeleteForm, \
-    SendFriendInvitationForm, CreateGroupForm
+    SendFriendInvitationForm, CreateGroupForm, GroupCommentForm
 from .models import Event, Game, UserGames, Profile, Invitation, Group, UserGroup, Comment
 from .utils import Calendar
 
@@ -346,5 +347,16 @@ class GroupDetailView(View):
     def get(self, request, group_id):
         self.context['group'] = Group.objects.get(id=group_id)
         self.context['group_members'] = UserGroup.objects.filter(group_id=group_id)
-        self.context["group_comments"] = Comment.objects.filter(group_id=group_id).order_by('create_date')
+        self.context['group_comments'] = Comment.objects.filter(group_id=group_id).order_by('create_date')
+        self.context['form'] = GroupCommentForm
         return render(request, self.html, self.context)
+
+    def post(self, request, group_id):
+        # self.context['group'] = Group.objects.get(id=group_id)
+        # self.context['group_members'] = UserGroup.objects.filter(group_id=group_id)
+        # self.context['group_comments'] = Comment.objects.filter(group_id=group_id).order_by('create_date')
+        form = GroupCommentForm(request.POST)
+        if form.is_valid():
+            Comment.objects.create(content=form.cleaned_data['content'], user=request.user, group_id=group_id,
+                                   create_date=timezone.now)
+        return redirect('group-details', group_id)

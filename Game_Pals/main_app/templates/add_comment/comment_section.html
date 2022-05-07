@@ -1,18 +1,21 @@
     <br><br>
     <h2>Comments:</h2>
-    <br>
+    <hr>
     <table class="table">
     {% for comment in group_comments %}
         <tr>
-            <hr>
             <th><img src="/images/{{ comment.user.profile.avatar }}" alt="Avatar" class="avatar" width="100" height="100"></th>
             <th class="text-lg-start">
                 {{ comment.content }}<br>
-                {{ comment.user.username }} - Tu będzie data
+                {{ comment.user.username }} - {{ comment.create_date|date:"Y-m-d H:m" }}
             </th>
-        </tr><br>
+        </tr>
         {% empty %}
         <h3>There is no comments...</h3>
     {% endfor %}
     </table><br><br>
-    <h1>Miejsce na formularz dodawania komentarza ;D</h1>
+    <form method="POST", action="">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" name="publish" class="btn btn-info btn-md" value="Publish">
+    </form>
