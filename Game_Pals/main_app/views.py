@@ -20,7 +20,7 @@ from datetime import date, datetime, timedelta
 import calendar
 from .forms import LoginForm, RegisterForm, UserUpdateForm1, UserUpdateForm2, UserAddEventForm, UserGameDeleteForm, \
     SendFriendInvitationForm, CreateGroupForm
-from .models import Event, Game, UserGames, Profile, Invitation, Group, UserGroup
+from .models import Event, Game, UserGames, Profile, Invitation, Group, UserGroup, Comment
 from .utils import Calendar
 
 
@@ -346,4 +346,5 @@ class GroupDetailView(View):
     def get(self, request, group_id):
         self.context['group'] = Group.objects.get(id=group_id)
         self.context['group_members'] = UserGroup.objects.filter(group_id=group_id)
+        self.context["group_comments"] = Comment.objects.filter(group_id=group_id).order_by('create_date')
         return render(request, self.html, self.context)

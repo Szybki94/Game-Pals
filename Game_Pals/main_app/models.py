@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.shortcuts import reverse
+from django.utils.timezone import now
+
+import datetime
 
 
 # Create your models here.
@@ -49,3 +52,12 @@ class Event(models.Model):
     start_time = models.DateTimeField()
     user = models.ManyToManyField(User, related_name="user_events")
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="group_events", null=True, blank=True)
+
+
+class Comment(models.Model):
+    content = models.TextField()
+    create_date = models.DateTimeField(auto_now_add=True, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_comments")
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="group_comments")
+
+
