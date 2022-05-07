@@ -29,7 +29,9 @@
             {% if member.is_admin == 0 and member.is_extra_user == 0 %}
                 Normal
             {% endif %}
+    {% if is_admin or is_extra == True %}
         <a class="text-end" methods="POST" href="!#">Update</a>
+    {% endif %}
     </a>
 
     {% endfor %}
@@ -46,5 +48,6 @@
 
     Tu będzie miejsce na kalendarz grupowy
     {% include "add_comment/comment_section.html" %}
+    <br>
 
 {% endblock %}

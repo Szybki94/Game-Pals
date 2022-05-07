@@ -334,29 +334,38 @@ class UserGroupsView(generic.ListView):
         return queryset
 
 
-# class GroupDetailView(View):
-#     def get(self, request, group_id):
-#         return HttpResponse('''Tu będzie widok szczegółów grupy wraz z jej kalendarzemi<br>
-#                             i możliwością dodawania komentarzy<br>''')
-
-
 class GroupDetailView(View):
-    html = "group_detail.html"  # do zrobienia
+    html = "group_detail.html"
     context = {}
 
     def get(self, request, group_id):
         self.context['group'] = Group.objects.get(id=group_id)
-        self.context['group_members'] = UserGroup.objects.filter(group_id=group_id)
+        self.context['group_members'] = UserGroup.objects.filter(group_id=group_id).order_by('user__username')
         self.context['group_comments'] = Comment.objects.filter(group_id=group_id).order_by('create_date')
         self.context['form'] = GroupCommentForm
+        # fragmentu poniżej używam, aby sprawdzić czy użytkownik ma uprawnienia
+        if UserGroup.objects.filter(group_id=group_id, user_id=request.user.id, is_admin=True):
+            self.context['is_admin'] = True
+        else:
+            self.context['is_admin'] = False
+        if UserGroup.objects.filter(group_id=group_id, user_id=request.user.id, is_extra_user=True):
+            self.context['is_extra'] = True
+        else:
+            self.context['is_extra'] = False
         return render(request, self.html, self.context)
 
     def post(self, request, group_id):
-        # self.context['group'] = Group.objects.get(id=group_id)
-        # self.context['group_members'] = UserGroup.objects.filter(group_id=group_id)
-        # self.context['group_comments'] = Comment.objects.filter(group_id=group_id).order_by('create_date')
         form = GroupCommentForm(request.POST)
         if form.is_valid():
             Comment.objects.create(content=form.cleaned_data['content'], user=request.user, group_id=group_id,
                                    create_date=timezone.now)
         return redirect('group-details', group_id)
+
+
+class DeleteComment(generic.DeleteView):
+    model = Comment
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'group-details', kwargs={'group_id': self.object.group_id}
+        )
