@@ -12,10 +12,10 @@
     <hr>
     <div class="text-center"><h3>{{ group.name }}</h3></div>
     <hr>
-    <div class="text-center"><h4>Group members</h4></div>
+    <div class="text-center"><h4>Group members:</h4></div>
     <hr>
     {% for member in group_members %}
-    <a class="list-group-item list-group-item-action" href="fill-me-with-link!!!">
+    <a class="list-group-item list-group-item-action" href="{% url 'user_details' member.user.id %}">
         {{ member.user.username }} -
         {% if member.is_admin == 1 and member.is_extra_user == 0 %}
                 Admin
@@ -30,10 +30,10 @@
                 Normal
             {% endif %}
     {% if is_admin or is_extra == True %}
-        <a class="text-end" methods="POST" href="!#">Update</a>
+        <a class="text-end" methods="POST" href="{% url 'update-member' group.id member.user.id %}">Update</a>
     {% endif %}
     </a>
-
+    
     {% endfor %}
 
 
@@ -46,7 +46,13 @@
 
 {% block content %}
 
-    Tu będzie miejsce na kalendarz grupowy
+    Tu będzie miejsce na kalendarz grupowy<br><br><hr>
+    To do:<br>
+    *Widok dodawania znajomych do grupy<br>
+    *Widok update'ujący i degradujący normal_user/extra<br>
+    *Widok pozwalający usunąć user'a z grupy<br>
+    *Przekierowanie na user_detail_view <--> dorobić w user detail view przekierwoanienie na user calendar, jeśli jest
+    w znajomych
     {% include "add_comment/comment_section.html" %}
     <br>
 

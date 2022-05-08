@@ -369,3 +369,9 @@ class DeleteComment(generic.DeleteView):
         return reverse_lazy(
             'group-details', kwargs={'group_id': self.object.group_id}
         )
+
+
+class MemberUpdateView(View):
+
+    def get(self, request, group_id, member_id):
+        return HttpResponse('Działam z posta')
