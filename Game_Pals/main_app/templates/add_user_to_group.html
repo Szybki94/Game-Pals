@@ -1,0 +1,16 @@
+{% extends "group_detail.html" %}
+
+
+{% block content %}
+
+    <h1>Tu będzie formularz dodawania znajomych do grupy</h1>
+    {% for friend in friends %}
+        <a class="list-group-item list-group-item-action" href="{% url 'user_search' %}{{ user.id }}">
+            {{ friend.username }}
+        </a>
+
+    {% empty %}
+        Hahaha, nie masz pszyjaciuł!!!
+    {% endfor %}
+
+{% endblock %}

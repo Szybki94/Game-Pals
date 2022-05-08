@@ -371,6 +371,25 @@ class DeleteComment(generic.DeleteView):
         )
 
 
+class AddMemberView(View):
+    context = {}
+
+    def get(self, request, group_id):
+        self.context['group'] = Group.objects.get(id=group_id)
+        self.context['group_members'] = UserGroup.objects.filter(group_id=group_id).order_by('user__username')
+        self.context['group_comments'] = Comment.objects.filter(group_id=group_id).order_by('create_date')
+        if UserGroup.objects.filter(group_id=group_id, user_id=request.user.id, is_admin=True):
+            self.context['is_admin'] = True
+        else:
+            self.context['is_admin'] = False
+        if UserGroup.objects.filter(group_id=group_id, user_id=request.user.id, is_extra_user=True):
+            self.context['is_extra'] = True
+        else:
+            self.context['is_extra'] = False
+        return render(request, "add_user_to_group.html", self.context)
+
+
+# do zrobienia
 class MemberUpdateView(View):
 
     def get(self, request, group_id, member_id):

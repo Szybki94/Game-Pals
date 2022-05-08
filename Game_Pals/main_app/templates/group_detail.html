@@ -2,7 +2,7 @@
 
 
 
-{% block title%}
+{% block title %}
     Group - details
 {% endblock %}
 
@@ -14,10 +14,16 @@
     <hr>
     <div class="text-center"><h4>Group members:</h4></div>
     <hr>
+    {% if is_admin or is_extra == True %}
+        <a href="{% url 'add-member' group.id %}">
+            <button class="btn btn-warning btn-md">Add friend to group</button>
+        </a>
+        <hr>
+    {% endif %}
     {% for member in group_members %}
-    <a class="list-group-item list-group-item-action" href="{% url 'user_details' member.user.id %}">
-        {{ member.user.username }} -
-        {% if member.is_admin == 1 and member.is_extra_user == 0 %}
+        <a class="list-group-item list-group-item-action" href="{% url 'user_details' member.user.id %}">
+            {{ member.user.username }} -
+            {% if member.is_admin == 1 and member.is_extra_user == 0 %}
                 Admin
             {% endif %}
             {% if member.is_admin == 1 and member.is_extra_user == 1 %}
@@ -29,11 +35,11 @@
             {% if member.is_admin == 0 and member.is_extra_user == 0 %}
                 Normal
             {% endif %}
-    {% if is_admin or is_extra == True %}
-        <a class="text-end" methods="POST" href="{% url 'update-member' group.id member.user.id %}">Update</a>
-    {% endif %}
-    </a>
-    
+            {% if is_admin or is_extra == True %}
+                <a class="text-end" methods="POST" href="{% url 'update-member' group.id member.user.id %}">Update</a>
+            {% endif %}
+        </a>
+
     {% endfor %}
 
 
@@ -46,7 +52,8 @@
 
 {% block content %}
 
-    Tu będzie miejsce na kalendarz grupowy<br><br><hr>
+    Tu będzie miejsce na kalendarz grupowy<br><br>
+    <hr>
     To do:<br>
     *Widok dodawania znajomych do grupy<br>
     *Widok update'ujący i degradujący normal_user/extra<br>

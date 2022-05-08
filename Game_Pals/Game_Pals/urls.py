@@ -22,7 +22,7 @@ from django.contrib.auth.decorators import login_required
 from main_app.views import MainView, HomeView, LoginView, RegisterView, UserUpdateView1, \
     UserUpdateView2, UserAddEventView, UserAddGamesView, UserDeleteGameView, UserSearchView,\
     EventDetailsView, UserDetailsView, LogoutView, FriendRequestsView, GroupCreateView, \
-    UserGroupsView, GroupDetailView, DeleteComment, MemberUpdateView
+    UserGroupsView, GroupDetailView, DeleteComment, MemberUpdateView, AddMemberView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -44,6 +44,7 @@ urlpatterns = [
     path('create-group/', login_required(GroupCreateView.as_view()), name='create_group'),
     path('user-groups/', login_required(UserGroupsView.as_view()), name='user_groups'),
     path('group-details/<int:group_id>/', login_required(GroupDetailView.as_view()), name='group-details'),
+    path('group-details/<int:group_id>/add-member/', login_required(AddMemberView.as_view()), name='add-member'),
     path('group-details/<int:group_id>/comment/<int:pk>/delete',
          login_required(DeleteComment.as_view()), name='delete-comment'),
     path('group-details/<int:group_id>/member/<int:member_id>',
