@@ -5,11 +5,22 @@
     <img class="align-items-center" src="/images/{{ searched_user.profile.avatar }}"  height="300"
          alt="Avatar" class="avatar"><br>
     {{ searched_user.username }} <br><br>
-    <form method="POST" action="">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" name="submit" class="btn btn-warning btn-md" value="Add to friend">
-    </form>
+    {{ searched_user.profile.personal_info }}<br><br>
+    User games:<br>
+    <ul>
+    {% for game in user_games %}
+        <li>{{ game.game.name }}</li>
+    {% endfor %}
+    </ul>
+
+    {% if searched_user not in friends_list %}
+        <form method="POST" action="">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" name="submit" class="btn btn-warning btn-md" value="Add to friend">
+        </form>
+    {% endif %}
+
 {#    Jeśli użytkownik nie jest w znajomych wyświetl add friend button<br>#}
 {#    Jeśli jest w znajomych wyświetl detail view :)#}
 

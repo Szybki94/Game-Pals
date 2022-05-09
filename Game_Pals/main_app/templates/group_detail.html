@@ -10,7 +10,11 @@
 {% block left_menu %}
     <br>
     <hr>
-    <div class="text-center"><h3>{{ group.name }}</h3></div>
+    <div class="text-center">
+
+        <h3><a href="{% url 'group-details' group.id %}">{{ group.name }}</a></h3>
+
+    </div>
     <hr>
     <div class="text-center"><h4>Group members:</h4></div>
     <hr>
@@ -52,10 +56,8 @@
 
 {% block content %}
 
-    Tu będzie miejsce na kalendarz grupowy<br><br>
     <hr>
     To do:<br>
-    *Widok dodawania znajomych do grupy<br>
     *Widok update'ujący i degradujący normal_user/extra<br>
     *Widok pozwalający usunąć user'a z grupy<br>
     *Przekierowanie na user_detail_view <--> dorobić w user detail view przekierwoanienie na user calendar, jeśli jest

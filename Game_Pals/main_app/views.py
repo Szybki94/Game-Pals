@@ -268,10 +268,13 @@ class EventDetailsView(generic.DetailView):
 
 class UserDetailsView(View):
 
+    # brakuje jeszcze zablokowania button'a dodania do znajomych jeśli zaproszenie oczekuje
     def get(self, request, user_id):
         context = {}
         user = request.user
         context['searched_user'] = User.objects.get(id=user_id)
+        context['user_games'] = UserGames.objects.filter(user_id=user_id)
+        context['friends_list'] = request.user.profile.friends.filter()
         context['form'] = SendFriendInvitationForm
         return render(request, "user_detail.html", context)
 
@@ -352,6 +355,9 @@ class GroupDetailView(View):
             self.context['is_extra'] = True
         else:
             self.context['is_extra'] = False
+
+        # Część dopowiedzialna za kalendarz:
+
         return render(request, self.html, self.context)
 
     def post(self, request, group_id):
@@ -371,6 +377,7 @@ class DeleteComment(generic.DeleteView):
         )
 
 
+# do zrobienia
 class AddMemberView(View):
     context = {}
 
@@ -378,6 +385,8 @@ class AddMemberView(View):
         self.context['group'] = Group.objects.get(id=group_id)
         self.context['group_members'] = UserGroup.objects.filter(group_id=group_id).order_by('user__username')
         self.context['group_comments'] = Comment.objects.filter(group_id=group_id).order_by('create_date')
+        # Stworzenie querysetu osób możliwych do zaproszenia (zrobiłem tak bo if statments w html nie działały):
+        self.context['friends_to_invite'] = request.user.profile.friends.filter().exclude(user_groups__group_id=group_id)
         if UserGroup.objects.filter(group_id=group_id, user_id=request.user.id, is_admin=True):
             self.context['is_admin'] = True
         else:
@@ -387,6 +396,17 @@ class AddMemberView(View):
         else:
             self.context['is_extra'] = False
         return render(request, "add_user_to_group.html", self.context)
+
+    def post(self, request, group_id):
+        if 'add_normal' in request.POST:
+            UserGroup.objects.create(group_id=group_id, user_id=request.POST['friend_id'],
+                                     is_admin=False, is_extra_user=False)
+            return redirect('add-member', group_id=group_id)
+
+        elif 'add_extra' in request.POST:
+            UserGroup.objects.create(group_id=group_id, user_id=request.POST['friend_id'],
+                                     is_admin=False, is_extra_user=True)
+            return redirect('add-member', group_id=group_id)
 
 
 # do zrobienia
