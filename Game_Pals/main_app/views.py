@@ -22,7 +22,7 @@ import calendar
 from .forms import LoginForm, RegisterForm, UserUpdateForm1, UserUpdateForm2, UserAddEventForm, UserGameDeleteForm, \
     SendFriendInvitationForm, CreateGroupForm, GroupCommentForm
 from .models import Event, Game, UserGames, Profile, Invitation, Group, UserGroup, Comment
-from .utils import Calendar
+from .utils import Calendar, GroupCalendar
 
 
 def get_date(req_day):
@@ -275,14 +275,27 @@ class UserDetailsView(View):
         context['searched_user'] = User.objects.get(id=user_id)
         context['user_games'] = UserGames.objects.filter(user_id=user_id)
         context['friends_list'] = request.user.profile.friends.filter()
-        context['form'] = SendFriendInvitationForm
+        context['form'] = SendFriendInvitationForm()
+        # użyć cocat, union, lub diffrence do ułożenia tego query - to nie rozwiązało problemu :(
+        # Zamieszanie ze sprawdzaniem istnięjącego invitation:
+        try:
+            context['user_invitation'] = Invitation.objects.get(sender_id=request.user.id, receiver_id=user_id)
+        except Invitation.DoesNotExist:
+            context['user_invitation'] = None
+        try:
+            context['receiver_invitation'] = Invitation.objects.get(sender_id=user_id, receiver_id=request.user.id)
+        except Invitation.DoesNotExist:
+            context['receiver_invitation'] = None
+        context['user_invitations'] = Invitation.objects.filter(sender_id=request.user.id)
+        context['receiver_invitations'] = Invitation.objects.filter(sender_id=user_id)
+
         return render(request, "user_detail.html", context)
 
     def post(self, request, user_id):
         form = SendFriendInvitationForm(request.POST)
         if form.is_valid():
             Invitation.objects.create(sender_id=request.user.id, receiver_id=user_id)
-        return redirect("home")
+        return redirect("user_search")
 
 
 class FriendRequestsView(View):
@@ -357,6 +370,20 @@ class GroupDetailView(View):
             self.context['is_extra'] = False
 
         # Część dopowiedzialna za kalendarz:
+        # use today's date for the calendar
+        d = get_date(self.request.GET.get('day', None))
+
+        # Previous and next month pass to context
+        d = get_date(self.request.GET.get('month', None))
+        self.context['prev_month'] = prev_month(d)
+        self.context['next_month'] = next_month(d)
+
+        # Instantiate our calendar class with today's year and date
+        cal = GroupCalendar(Group.objects.get(id=group_id), d.year, d.month)
+
+        # Call the formatmonth method, which returns our calendar as a table
+        html_cal = cal.formatmonth(withyear=True)
+        self.context['calendar'] = mark_safe(html_cal)
 
         return render(request, self.html, self.context)
 
@@ -386,7 +413,8 @@ class AddMemberView(View):
         self.context['group_members'] = UserGroup.objects.filter(group_id=group_id).order_by('user__username')
         self.context['group_comments'] = Comment.objects.filter(group_id=group_id).order_by('create_date')
         # Stworzenie querysetu osób możliwych do zaproszenia (zrobiłem tak bo if statments w html nie działały):
-        self.context['friends_to_invite'] = request.user.profile.friends.filter().exclude(user_groups__group_id=group_id)
+        self.context['friends_to_invite'] = request.user.profile.friends.filter().exclude(
+            user_groups__group_id=group_id)
         if UserGroup.objects.filter(group_id=group_id, user_id=request.user.id, is_admin=True):
             self.context['is_admin'] = True
         else:
@@ -411,6 +439,31 @@ class AddMemberView(View):
 
 # do zrobienia
 class MemberUpdateView(View):
+    context = {}
+    html = "group_upgrade_member.html"
 
     def get(self, request, group_id, member_id):
-        return HttpResponse('Działam z posta')
+        self.context['group'] = Group.objects.get(id=group_id)
+        self.context['group_members'] = UserGroup.objects.filter(group_id=group_id).order_by('user__username')
+        self.context['member'] = UserGroup.objects.get(user_id=member_id)
+        if UserGroup.objects.filter(group_id=group_id, user_id=request.user.id, is_admin=True):
+            self.context['is_admin'] = True
+        else:
+            self.context['is_admin'] = False
+        if UserGroup.objects.filter(group_id=group_id, user_id=request.user.id, is_extra_user=True):
+            self.context['is_extra'] = True
+        else:
+            self.context['is_extra'] = False
+        return render(request, self.html, self.context)
+
+    def post(self, request, group_id, member_id):
+        member = UserGroup.objects.get(user_id=member_id)
+        if request.POST.get('normal'):
+            member.is_extra_user = False
+            member.save()
+        elif request.POST.get('extra'):
+            member.is_extra_user = True
+            member.save()
+        elif request.POST.get('delete'):
+            member.delete()
+        return redirect('group-details', group_id=group_id)

@@ -50,7 +50,7 @@ class Event(models.Model):
     name = models.CharField(max_length=256)
     description = models.TextField(null=True)
     start_time = models.DateTimeField()
-    user = models.ManyToManyField(User, related_name="user_events")
+    user = models.ManyToManyField(User, related_name="user_events", null=True, blank=True)
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="group_events", null=True, blank=True)
 
     def __str__(self):

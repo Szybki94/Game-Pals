@@ -3,13 +3,7 @@ from calendar import HTMLCalendar
 from .models import Event
 
 
-class Calendar(HTMLCalendar):
-    def __init__(self, user, year=None, month=None,):
-        self.year = year
-        self.month = month
-        self.user = user
-        super().__init__()
-
+class StyleMixin:
     # formats a day as a td
     # filter events by day
     def formatday(self, day, events):
@@ -31,7 +25,7 @@ class Calendar(HTMLCalendar):
     # formats a month as a table
     # filter events by year and month
     def formatmonth(self, withyear=True):
-        events = Event.objects.filter(user=self.user, start_time__year=self.year, start_time__month=self.month)
+        events = self.get_events()
 
         cal = f'<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
         cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
@@ -39,3 +33,30 @@ class Calendar(HTMLCalendar):
         for week in self.monthdays2calendar(self.year, self.month):
             cal += f'{self.formatweek(week, events)}\n'
         return cal
+
+    def get_events(self):
+        raise NotImplemented
+
+
+class Calendar(StyleMixin, HTMLCalendar):
+    def __init__(self, user, year=None, month=None, ):
+        self.year = year
+        self.month = month
+        self.user = user
+        super().__init__()
+
+    def get_events(self):
+        events = Event.objects.filter(user=self.user, start_time__year=self.year, start_time__month=self.month)
+        return events
+
+
+class GroupCalendar(StyleMixin, HTMLCalendar):
+    def __init__(self, group_id, year=None, month=None, ):
+        self.year = year
+        self.month = month
+        self.group = group_id
+        super().__init__()
+
+    def get_events(self):
+        events = Event.objects.filter(group=self.group, start_time__year=self.year, start_time__month=self.month)
+        return events

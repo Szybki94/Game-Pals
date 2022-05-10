@@ -40,7 +40,9 @@
                 Normal
             {% endif %}
             {% if is_admin or is_extra == True %}
-                <a class="text-end" methods="POST" href="{% url 'update-member' group.id member.user.id %}">Update</a>
+                {% if member.user != user %}
+                    <a class="text-end" methods="POST" href="{% url 'update-member' group.id member.user.id %}">Update</a>
+                {% endif %}
             {% endif %}
         </a>
 
@@ -56,12 +58,7 @@
 
 {% block content %}
 
-    <hr>
-    To do:<br>
-    *Widok update'ujący i degradujący normal_user/extra<br>
-    *Widok pozwalający usunąć user'a z grupy<br>
-    *Przekierowanie na user_detail_view <--> dorobić w user detail view przekierwoanienie na user calendar, jeśli jest
-    w znajomych
+    {% include "calendar/calendar.html" %}
     {% include "add_comment/comment_section.html" %}
     <br>
 
