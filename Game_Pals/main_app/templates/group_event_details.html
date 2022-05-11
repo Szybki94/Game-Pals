@@ -1,0 +1,68 @@
+{% extends "template.html" %}
+
+
+
+{% block title %}
+    Group - details
+{% endblock %}
+
+
+{% block left_menu %}
+    <br>
+    <hr>
+    <div class="text-center">
+
+        <h3><a href="{% url 'group-details' group.id %}">{{ group.name }}</a></h3>
+
+    </div>
+    <hr>
+    <div class="text-center"><h4>Group members:</h4></div>
+    <hr>
+    {% if is_admin or is_extra == True %}
+        <a href="{% url 'add-member' group.id %}">
+            <button class="btn btn-warning btn-md">Add friend to group</button>
+        </a>
+        <hr>
+    {% endif %}
+    {% for member in group_members %}
+        <a class="list-group-item list-group-item-action" href="{% url 'user_details' member.user.id %}">
+            {{ member.user.username }} -
+            {% if member.is_admin == 1 and member.is_extra_user == 0 %}
+                Admin
+            {% endif %}
+            {% if member.is_admin == 1 and member.is_extra_user == 1 %}
+                Admin
+            {% endif %}
+            {% if member.is_extra_user == 1 and member.is_admin == 0 %}
+                Extra
+            {% endif %}
+            {% if member.is_admin == 0 and member.is_extra_user == 0 %}
+                Normal
+            {% endif %}
+            {% if is_admin or is_extra == True %}
+                {% if member.user != user %}
+                    <a class="text-end" methods="POST" href="{% url 'update-member' group.id member.user.id %}">Update</a>
+                {% endif %}
+            {% endif %}
+        </a>
+
+    {% endfor %}
+
+
+{% endblock %}
+
+
+{#{% block dropdown_menu %}#}
+{#{% endblock %}#}
+
+
+{% block content %}
+
+    <br>
+        <h1 class="modal-header">{{ event.name }}</h1>
+        <h3 class="modal-header">[{{ event.start_time|date:'d-m-Y H:i' }}]</h3><br>
+        <div class="text">{{ event.description }}</div><br><hr>
+
+        {% include "add_comment/comment_section.html" %}
+
+{% endblock %}

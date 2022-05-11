@@ -13,6 +13,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views import generic, View
+from django.views.generic.base import ContextMixin
 
 # Python modules
 from datetime import date, datetime, timedelta
@@ -260,7 +261,7 @@ class UserSearchView(View):
 class EventDetailsView(generic.DetailView):
     template_name = "event_detail.html"
 
-    # Nadpisanie funkcji zwracającej obiek, ponieważ nie chce w URL'u mieć <int: pk>, bo brzydko wygląda :P
+    # Nadpisanie funkcji zwracającej obiekt, ponieważ nie chce w URL'u mieć <int: pk>, bo brzydko wygląda :P
     def get_object(self):
         id_url = self.kwargs.get("event_id")
         return get_object_or_404(Event, id=id_url)
@@ -411,7 +412,7 @@ class AddMemberView(View):
     def get(self, request, group_id):
         self.context['group'] = Group.objects.get(id=group_id)
         self.context['group_members'] = UserGroup.objects.filter(group_id=group_id).order_by('user__username')
-        self.context['group_comments'] = Comment.objects.filter(group_id=group_id).order_by('create_date')
+        self.context['comments'] = Comment.objects.filter(group_id=group_id, event_id=None).order_by('create_date')
         # Stworzenie querysetu osób możliwych do zaproszenia (zrobiłem tak bo if statments w html nie działały):
         self.context['friends_to_invite'] = request.user.profile.friends.filter().exclude(
             user_groups__group_id=group_id)
@@ -487,3 +488,32 @@ class GroupAddEventView(View):
             # Połączenie eventu z użytkownikiem
             group.group_events.add(Event.objects.get(id=new_event.id))
         return redirect('group-details', group_id=group_id)
+
+
+class GroupEventDetailsView(View):
+    context = {}
+
+    def get(self, request, group_id, event_id):
+        self.context['group'] = Group.objects.get(id=group_id)
+        self.context['group_members'] = UserGroup.objects.filter(group_id=group_id).order_by('user__username')
+        self.context['comments'] = Comment.objects.filter(group_id=None, event_id=event_id).order_by('create_date')
+        self.context['event'] = Event.objects.get(id=event_id)
+        # Tutaj nada się ten sam formularz co do dodawania komentarza w grupie
+        self.context['form_comment'] = GroupCommentForm
+        if UserGroup.objects.filter(group_id=group_id, user_id=request.user.id, is_admin=True):
+            self.context['is_admin'] = True
+        else:
+            self.context['is_admin'] = False
+        if UserGroup.objects.filter(group_id=group_id, user_id=request.user.id, is_extra_user=True):
+            self.context['is_extra'] = True
+        else:
+            self.context['is_extra'] = False
+        return render(request, "group_event_details.html", self.context)
+
+    def post(self, request, group_id, event_id):
+        form_comment = GroupCommentForm(request.POST)
+        if form_comment.is_valid():
+            Comment.objects.create(content=form_comment.cleaned_data['content'], user=request.user, group_id=None,
+                                   event_id=event_id, create_date=timezone.now)
+        return redirect('group_event_details', group_id=group_id, event_id=event_id)
+
