@@ -358,7 +358,7 @@ class GroupDetailView(View):
         self.context['group'] = Group.objects.get(id=group_id)
         self.context['group_members'] = UserGroup.objects.filter(group_id=group_id).order_by('user__username')
         self.context['group_comments'] = Comment.objects.filter(group_id=group_id).order_by('create_date')
-        self.context['form'] = GroupCommentForm
+        self.context['form_comment'] = GroupCommentForm
         # fragmentu poniżej używam, aby sprawdzić czy użytkownik ma uprawnienia
         if UserGroup.objects.filter(group_id=group_id, user_id=request.user.id, is_admin=True):
             self.context['is_admin'] = True
@@ -388,9 +388,9 @@ class GroupDetailView(View):
         return render(request, self.html, self.context)
 
     def post(self, request, group_id):
-        form = GroupCommentForm(request.POST)
-        if form.is_valid():
-            Comment.objects.create(content=form.cleaned_data['content'], user=request.user, group_id=group_id,
+        form_comment = GroupCommentForm(request.POST)
+        if form_comment.is_valid():
+            Comment.objects.create(content=form_comment.cleaned_data['content'], user=request.user, group_id=group_id,
                                    create_date=timezone.now)
         return redirect('group-details', group_id)
 
@@ -466,4 +466,24 @@ class MemberUpdateView(View):
             member.save()
         elif request.POST.get('delete'):
             member.delete()
+        return redirect('group-details', group_id=group_id)
+
+
+class GroupAddEventView(View):
+    def get(self, request, group_id):
+        context = {}
+        context['group'] = Group.objects.get(id=group_id)
+        # html user_add_event nadaje się do tego dobrze, nie trzeba modyfikować kodu :)
+        return render(request, 'User_add_event.html', {'form': UserAddEventForm})
+
+    def post(self, request, group_id):
+        group = Group.objects.get(id=group_id)
+        title = request.POST.get('name')
+        description = request.POST.get('description')
+        start_time = request.POST.get('start_time')
+        # Queryset dla utworzenia Eventu (atomic, bo chcę żeby wszystko poleciało razem
+        with transaction.atomic():
+            new_event = Event.objects.create(name=title, description=description, start_time=start_time)
+            # Połączenie eventu z użytkownikiem
+            group.group_events.add(Event.objects.get(id=new_event.id))
         return redirect('group-details', group_id=group_id)
