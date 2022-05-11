@@ -63,6 +63,7 @@
         <h3 class="modal-header">[{{ event.start_time|date:'d-m-Y H:i' }}]</h3><br>
         <div class="text">{{ event.description }}</div><br><hr>
 
-        {% include "add_comment/comment_section.html" %}
+        {% include "add_comment/comment_event_section.html" %}
+
 
 {% endblock %}

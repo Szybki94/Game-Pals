@@ -277,8 +277,7 @@ class UserDetailsView(View):
         context['user_games'] = UserGames.objects.filter(user_id=user_id)
         context['friends_list'] = request.user.profile.friends.filter()
         context['form'] = SendFriendInvitationForm()
-        # użyć cocat, union, lub diffrence do ułożenia tego query - to nie rozwiązało problemu :(
-        # Zamieszanie ze sprawdzaniem istnięjącego invitation:
+        # Zamieszanie ze sprawdzaniem istniejącego invitation:
         try:
             context['user_invitation'] = Invitation.objects.get(sender_id=request.user.id, receiver_id=user_id)
         except Invitation.DoesNotExist:
@@ -290,6 +289,10 @@ class UserDetailsView(View):
         context['user_invitations'] = Invitation.objects.filter(sender_id=request.user.id)
         context['receiver_invitations'] = Invitation.objects.filter(sender_id=user_id)
 
+        # Poniższy fragment kodu przekieruje na kalendarz użytkownika, jeśli są znajomymi
+        if Invitation.objects.filter(sender_id=request.user.id, receiver_id=user_id, accepted=True).exists() \
+                or Invitation.objects.filter(sender_id=user_id, receiver_id=request.user.id, accepted=True).exists():
+            return render(request, "friend_detail.html", context)
         return render(request, "user_detail.html", context)
 
     def post(self, request, user_id):
@@ -351,6 +354,17 @@ class UserGroupsView(generic.ListView):
         return queryset
 
 
+# Kiedyś się za to wezmę, bo stwarza problemy i nie mam czasu na doktoryzowanie
+# class GroupContextMixin(ContextMixin):
+#
+#     def get_context_data(self, group_id, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['group'] = Group.objects.get(id=self.kwargs.get('group_id', 'nie znaleziono group id'))
+#         context['group_members'] = UserGroup.objects.filter(group_id=self.kwargs.get('group_id').order_by('user__username'))
+#         context['group_comments'] = Comment.objects.filter(group_id=self.kwargs.get('group_id').order_by('create_date'))
+#         return context
+
+
 class GroupDetailView(View):
     html = "group_detail.html"
     context = {}
@@ -358,7 +372,7 @@ class GroupDetailView(View):
     def get(self, request, group_id):
         self.context['group'] = Group.objects.get(id=group_id)
         self.context['group_members'] = UserGroup.objects.filter(group_id=group_id).order_by('user__username')
-        self.context['group_comments'] = Comment.objects.filter(group_id=group_id).order_by('create_date')
+        self.context['comments'] = Comment.objects.filter(group_id=group_id).order_by('create_date')
         self.context['form_comment'] = GroupCommentForm
         # fragmentu poniżej używam, aby sprawdzić czy użytkownik ma uprawnienia
         if UserGroup.objects.filter(group_id=group_id, user_id=request.user.id, is_admin=True):
@@ -405,7 +419,14 @@ class DeleteComment(generic.DeleteView):
         )
 
 
-# do zrobienia
+class DeleteEventComment(generic.DeleteView):
+    model = Comment
+
+    def get_success_url(self):
+        return reverse_lazy('group_event_details',
+                            kwargs={'group_id': self.object.group_id, 'event_id': self.object.event_id})
+
+
 class AddMemberView(View):
     context = {}
 
@@ -438,7 +459,6 @@ class AddMemberView(View):
             return redirect('add-member', group_id=group_id)
 
 
-# do zrobienia
 class MemberUpdateView(View):
     context = {}
     html = "group_upgrade_member.html"
@@ -516,4 +536,3 @@ class GroupEventDetailsView(View):
             Comment.objects.create(content=form_comment.cleaned_data['content'], user=request.user, group_id=None,
                                    event_id=event_id, create_date=timezone.now)
         return redirect('group_event_details', group_id=group_id, event_id=event_id)
-

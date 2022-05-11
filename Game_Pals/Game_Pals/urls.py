@@ -22,7 +22,7 @@ from django.contrib.auth.decorators import login_required
 from main_app.views import MainView, HomeView, LoginView, RegisterView, UserUpdateView1, \
     UserUpdateView2, UserAddEventView, UserAddGamesView, UserDeleteGameView, UserSearchView,\
     EventDetailsView, UserDetailsView, LogoutView, FriendRequestsView, GroupCreateView, \
-    UserGroupsView, GroupDetailView, DeleteComment, MemberUpdateView, AddMemberView, \
+    UserGroupsView, GroupDetailView, DeleteComment, DeleteEventComment, MemberUpdateView, AddMemberView, \
     GroupAddEventView, GroupEventDetailsView
 
 urlpatterns = [
@@ -48,6 +48,8 @@ urlpatterns = [
     path('group-details/<int:group_id>/add-member/', login_required(AddMemberView.as_view()), name='add-member'),
     path('group-details/<int:group_id>/comment/<int:pk>/delete',
          login_required(DeleteComment.as_view()), name='delete-comment'),
+    path('group-details/<int:group_id>/event-details/<int:event_id>/comment/<int:pk>/delete',
+         login_required(DeleteEventComment.as_view()), name='delete-event-comment'),
     path('group-details/<int:group_id>/member/<int:member_id>',
          login_required(MemberUpdateView.as_view()), name='update-member'),
     path('group-details/<int:group_id>/calendar', login_required(GroupDetailView.as_view()), name="group_calendar"),
