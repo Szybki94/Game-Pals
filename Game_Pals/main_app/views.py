@@ -75,6 +75,29 @@ class FriendshipMixin(UserPassesTestMixin):
         return redirect('home')
 
 
+class GroupContextMixin(ContextMixin):
+
+    def get_context_data(self, group_id, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['group'] = get_object_or_404(Group, id=self.kwargs.get('group_id'))
+        context['group_members'] = UserGroup.objects.filter(group_id=self.kwargs.get('group_id'))\
+            .order_by('user__username')
+        context['comments'] = Comment.objects.filter(group_id=self.kwargs.get('group_id'), event_id=None)\
+            .order_by('create_date')
+        # Stworzenie querysetu osób możliwych do zaproszenia (zrobiłem tak bo if statments w html nie działały):
+        context['friends_to_invite'] = self.request.user.profile.friends.filter().exclude(
+            user_groups__group_id=group_id)
+        if UserGroup.objects.filter(group_id=self.kwargs.get('group_id'), user_id=self.request.user.id, is_admin=True):
+            context['is_admin'] = True
+        else:
+            context['is_admin'] = False
+        if UserGroup.objects.filter(group_id=self.kwargs.get('group_id'), user_id=self.request.user.id, is_extra_user=True):
+            context['is_extra'] = True
+        else:
+            context['is_extra'] = False
+        return context
+
+
 class MainView(View):
     def get(self, request):
         if request.user.is_authenticated:
@@ -395,17 +418,6 @@ class UserGroupsView(generic.ListView):
         queryset = super(UserGroupsView, self).get_queryset()
         queryset = queryset.filter(user_id=self.request.user.id)
         return queryset
-
-
-# Kiedyś się za to wezmę, bo stwarza problemy i nie mam czasu na doktoryzowanie
-# class GroupContextMixin(ContextMixin):
-#
-#     def get_context_data(self, group_id, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context['group'] = Group.objects.get(id=self.kwargs.get('group_id', 'nie znaleziono group id'))
-#         context['group_members'] = UserGroup.objects.filter(group_id=self.kwargs.get('group_id').order_by('user__username'))
-#         context['group_comments'] = Comment.objects.filter(group_id=self.kwargs.get('group_id').order_by('create_date'))
-#         return context
 
 
 class GroupDetailView(GroupMemberMixin, View):
