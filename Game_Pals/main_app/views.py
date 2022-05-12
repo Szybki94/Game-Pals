@@ -1,6 +1,7 @@
 # django modules
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.db.models import Q
@@ -46,6 +47,21 @@ def next_month(d):
     next_month = last + timedelta(days=1)
     month = 'month=' + str(next_month.year) + '-' + str(next_month.month)
     return month
+
+
+class GroupMemberMixin(UserPassesTestMixin):
+    def test_func(self, **kwargs):
+        # Wiem, że to wygląda strasznie, ale to przez problem z modelami, że nie zrobiłem relacji Through
+        # Jakoś sobie trzeba było poradzić
+        return self.request.user.id in UserGroup.objects\
+            .filter(group_id=self.kwargs.get('group_id')).values_list('user_id', flat=True)
+
+    def handle_no_permission(self):
+        return redirect('home')
+
+
+
+
 
 
 class MainView(View):
@@ -381,7 +397,7 @@ class UserGroupsView(generic.ListView):
 #         return context
 
 
-class GroupDetailView(View):
+class GroupDetailView(GroupMemberMixin, View):
     html = "group_detail.html"
     context = {}
 
@@ -426,7 +442,7 @@ class GroupDetailView(View):
         return redirect('group-details', group_id)
 
 
-class DeleteComment(generic.DeleteView):
+class DeleteComment(GroupMemberMixin, generic.DeleteView):
     model = Comment
 
     def get_success_url(self):
@@ -435,7 +451,7 @@ class DeleteComment(generic.DeleteView):
         )
 
 
-class DeleteEventComment(generic.DeleteView):
+class DeleteEventComment(GroupMemberMixin, generic.DeleteView):
     model = Comment
 
     def get_success_url(self):
@@ -443,7 +459,7 @@ class DeleteEventComment(generic.DeleteView):
                             kwargs={'group_id': self.object.group_id, 'event_id': self.object.event_id})
 
 
-class AddMemberView(View):
+class AddMemberView(GroupMemberMixin, View):
     context = {}
 
     def get(self, request, group_id):
@@ -475,7 +491,7 @@ class AddMemberView(View):
             return redirect('add-member', group_id=group_id)
 
 
-class MemberUpdateView(View):
+class MemberUpdateView(GroupMemberMixin, View):
     context = {}
     html = "group_upgrade_member.html"
 
@@ -506,7 +522,7 @@ class MemberUpdateView(View):
         return redirect('group-details', group_id=group_id)
 
 
-class GroupAddEventView(View):
+class GroupAddEventView(GroupMemberMixin, View):
     def get(self, request, group_id):
         context = {}
         context['group'] = Group.objects.get(id=group_id)
@@ -526,7 +542,7 @@ class GroupAddEventView(View):
         return redirect('group-details', group_id=group_id)
 
 
-class GroupEventDetailsView(View):
+class GroupEventDetailsView(GroupMemberMixin, View):
     context = {}
 
     def get(self, request, group_id, event_id):
