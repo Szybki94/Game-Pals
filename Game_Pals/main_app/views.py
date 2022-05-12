@@ -53,15 +53,26 @@ class GroupMemberMixin(UserPassesTestMixin):
     def test_func(self, **kwargs):
         # Wiem, że to wygląda strasznie, ale to przez problem z modelami, że nie zrobiłem relacji Through
         # Jakoś sobie trzeba było poradzić
-        return self.request.user.id in UserGroup.objects\
+        return self.request.user.id in UserGroup.objects \
             .filter(group_id=self.kwargs.get('group_id')).values_list('user_id', flat=True)
 
     def handle_no_permission(self):
         return redirect('home')
 
 
+class FriendshipMixin(UserPassesTestMixin):
+    def test_func(self, **kwargs):
+        if Invitation.objects.filter \
+                    (sender_id=self.request.user.id, receiver_id=self.kwargs.get('friend_id'), accepted=True).exists():
+            return True
+        elif Invitation.objects.filter \
+                    (sender_id=self.kwargs.get('friend_id'), receiver_id=self.request.user.id, accepted=True).exists():
+            return True
+        else:
+            return False
 
-
+    def handle_no_permission(self):
+        return redirect('home')
 
 
 class MainView(View):
@@ -570,7 +581,7 @@ class GroupEventDetailsView(GroupMemberMixin, View):
         return redirect('group_event_details', group_id=group_id, event_id=event_id)
 
 
-class FriendCalendarView(View):
+class FriendCalendarView(FriendshipMixin, View):
     context = {}
 
     def get(self, request, friend_id):
@@ -594,7 +605,7 @@ class FriendCalendarView(View):
         return render(request, 'friend_calendar.html', self.context)
 
 
-class FriendEventDetailsView(generic.DetailView):
+class FriendEventDetailsView(FriendshipMixin, generic.DetailView):
     template_name = "friend_event_detail.html"
 
     def get_object(self):
