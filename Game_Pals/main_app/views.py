@@ -80,9 +80,9 @@ class GroupContextMixin(ContextMixin):
     def get_context_data(self, group_id, **kwargs):
         context = super().get_context_data(**kwargs)
         context['group'] = get_object_or_404(Group, id=self.kwargs.get('group_id'))
-        context['group_members'] = UserGroup.objects.filter(group_id=self.kwargs.get('group_id'))\
+        context['group_members'] = UserGroup.objects.filter(group_id=self.kwargs.get('group_id')) \
             .order_by('user__username')
-        context['comments'] = Comment.objects.filter(group_id=self.kwargs.get('group_id'), event_id=None)\
+        context['comments'] = Comment.objects.filter(group_id=self.kwargs.get('group_id'), event_id=None) \
             .order_by('create_date')
         # Stworzenie querysetu osób możliwych do zaproszenia (zrobiłem tak bo if statments w html nie działały):
         context['friends_to_invite'] = self.request.user.profile.friends.filter().exclude(
@@ -91,7 +91,8 @@ class GroupContextMixin(ContextMixin):
             context['is_admin'] = True
         else:
             context['is_admin'] = False
-        if UserGroup.objects.filter(group_id=self.kwargs.get('group_id'), user_id=self.request.user.id, is_extra_user=True):
+        if UserGroup.objects.filter(group_id=self.kwargs.get('group_id'), user_id=self.request.user.id,
+                                    is_extra_user=True):
             context['is_extra'] = True
         else:
             context['is_extra'] = False
@@ -242,7 +243,7 @@ class UserAddEventView(View):
         title = request.POST.get('name')
         description = request.POST.get('description')
         start_time = request.POST.get('start_time')
-        # Queryset dla utworzenia Eventu (atomic, bo chcę żeby wszystko poleciało razem
+        # Queryset dla utworzenia Eventu (atomic, bo chcę żeby wszystko poleciało razem)
         with transaction.atomic():
             new_event = Event.objects.create(name=title, description=description, start_time=start_time)
             # Połączenie eventu z użytkownikiem
@@ -490,7 +491,7 @@ class AddMemberView(GroupMemberMixin, View):
         self.context['group_members'] = UserGroup.objects.filter(group_id=group_id).order_by('user__username')
         self.context['comments'] = Comment.objects.filter(group_id=group_id, event_id=None).order_by('create_date')
         # Stworzenie querysetu osób możliwych do zaproszenia (zrobiłem tak bo if statments w html nie działały):
-        self.context['friends_to_invite'] = request.user.profile.friends.filter().exclude(
+        self.context['friends_to_invite'] = request.user.profile.friends.all().exclude(
             user_groups__group_id=group_id)
         if UserGroup.objects.filter(group_id=group_id, user_id=request.user.id, is_admin=True):
             self.context['is_admin'] = True
