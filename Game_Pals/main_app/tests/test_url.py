@@ -2,7 +2,7 @@ from django.test import SimpleTestCase
 from django.urls import reverse, resolve
 from ..views import MainView, HomeView, LoginView, LogoutView, RegisterView, \
     UserUpdateView1, UserUpdateView2, UserAddEventView, UserAddGamesView, UserDeleteGameView, \
-    UserSearchView, EventDetailsView
+    UserSearchView, EventDetailsView, UserDetailsView
 
 
 class TestUrls(SimpleTestCase):
@@ -66,3 +66,8 @@ class TestUrls(SimpleTestCase):
         url = reverse('event_details', kwargs={'event_id': 1})
         print(resolve(url))
         self.assertEquals(resolve(url).func.view_class, EventDetailsView)
+
+    def test_url_user_details_is_resolved(self):
+        url = reverse('user_details', kwargs={'user_id': 1})
+        print(resolve(url))
+        self.assertEquals(resolve(url).func.view_class, UserDetailsView)

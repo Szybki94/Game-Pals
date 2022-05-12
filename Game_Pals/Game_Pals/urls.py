@@ -42,9 +42,9 @@ urlpatterns = [
     path('delete-games/<int:game_id>/', login_required(UserDeleteGameView.as_view()), name="user_delete_games"),
     path('user-search/', login_required(UserSearchView.as_view()), name="user_search"),
     path('event-details/<int:event_id>/', login_required(EventDetailsView.as_view()), name='event_details'),
+    path('user-search/<int:user_id>/', login_required(UserDetailsView.as_view()), name='user_details'),
 
     path('calendar', login_required(HomeView.as_view()), name="user_calendar"),
-    path('user-search/<int:user_id>/', login_required(UserDetailsView.as_view()), name='user_details'),
     path('pals-list/', login_required(UserPalsView.as_view()), name='user_pals'),
     path('pals-list/<int:pk>/delete', login_required(DeleteFriendship.as_view()), name='delete-friendship'),
     path('friend-requests/', login_required(FriendRequestsView.as_view()), name='friend_requests'),
