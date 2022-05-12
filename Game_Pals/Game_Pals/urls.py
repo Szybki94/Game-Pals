@@ -23,7 +23,7 @@ from main_app.views import MainView, HomeView, LoginView, RegisterView, UserUpda
     UserUpdateView2, UserAddEventView, UserAddGamesView, UserDeleteGameView, UserSearchView,\
     EventDetailsView, UserDetailsView, LogoutView, FriendRequestsView, GroupCreateView, \
     UserGroupsView, GroupDetailView, DeleteComment, DeleteEventComment, MemberUpdateView, AddMemberView, \
-    GroupAddEventView, GroupEventDetailsView
+    GroupAddEventView, GroupEventDetailsView, FriendCalendarView, FriendEventDetailsView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -56,6 +56,10 @@ urlpatterns = [
     path('group-details/<int:group_id>/add-event/', login_required(GroupAddEventView.as_view()), name="group_add_event"),
     path('group-details/<int:group_id>/event-details/<int:event_id>/',
          login_required(GroupEventDetailsView.as_view()), name="group_event_details"),
+    path('friend-calendar/<int:friend_id>/', login_required(FriendCalendarView.as_view()), name='friend-calendar'),
+    path('friend-calendar/<int:friend_id>/calendar', login_required(FriendCalendarView.as_view()), name="friend-calendar-details"),
+    path('friend-calendar/<int:friend_id>/event-details/<int:event_id>/',
+         login_required(FriendEventDetailsView.as_view()), name="friend_event_details"),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

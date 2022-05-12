@@ -1,0 +1,60 @@
+{% extends "template.html" %}
+
+
+
+{% block title%}
+    Game-Pals Home
+{% endblock %}
+
+
+{% block left_menu %}
+    <br>
+    <hr>
+    <div class="text-center"><h3>{{ user.username }}</h3></div>
+    <hr>
+    <img class="align-items-center" src="/images/{{ profile.avatar }}" alt="Avatar" class="avatar">
+    <hr>
+    <div class="text-center"><h4>Player games</h4></div>
+    <hr>
+    {% for game in games %}
+    <a class="list-group-item list-group-item-action" href="fill-me-with-link!!!">
+        {{ game.name }}<a class="text-end" methods="POST" href="/delete-games/{{ game.id }}">Delete</a>
+    </a>
+
+        {% empty %}
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'user_add_games' %}">
+                You dont play games? ;(<br>
+                Pick some!!!
+            </a>
+    {% endfor %}
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'user_add_games' %}">
+                Add more games
+            </a>
+
+    {% if profile.personal_info %}
+    <br>
+    <div class="text-center"><h4>Player info</h4></div>
+    <hr>
+        <div class="text-break list-group-item list-group-item-action list-group-item-light p-3">
+            {{ profile.personal_info }}
+        </div>
+    {% endif %}
+
+{#    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">Shortcuts</a>#}
+{#    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">Overview</a>#}
+{#    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">Events</a>#}
+{#    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">Profile</a>#}
+{#    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">Status</a>#}
+{% endblock %}
+
+
+{#{% block dropdown_menu %}#}
+{#{% endblock %}#}
+
+
+{% block content %}
+    <br>
+    <h3>{{ friend.username }}'s Calendar:</h3><hr>
+    {% include "calendar/calendar_friend.html" %}
+
+{% endblock %}

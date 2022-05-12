@@ -23,7 +23,7 @@ import calendar
 from .forms import LoginForm, RegisterForm, UserUpdateForm1, UserUpdateForm2, UserAddEventForm, UserGameDeleteForm, \
     SendFriendInvitationForm, CreateGroupForm, GroupCommentForm
 from .models import Event, Game, UserGames, Profile, Invitation, Group, UserGroup, Comment
-from .utils import Calendar, GroupCalendar
+from .utils import Calendar, GroupCalendar, FriendCalendar
 
 
 def get_date(req_day):
@@ -269,7 +269,6 @@ class EventDetailsView(generic.DetailView):
 
 class UserDetailsView(View):
 
-    # brakuje jeszcze zablokowania button'a dodania do znajomych jeśli zaproszenie oczekuje
     def get(self, request, user_id):
         context = {}
         user = request.user
@@ -292,7 +291,7 @@ class UserDetailsView(View):
         # Poniższy fragment kodu przekieruje na kalendarz użytkownika, jeśli są znajomymi
         if Invitation.objects.filter(sender_id=request.user.id, receiver_id=user_id, accepted=True).exists() \
                 or Invitation.objects.filter(sender_id=user_id, receiver_id=request.user.id, accepted=True).exists():
-            return render(request, "friend_detail.html", context)
+            return redirect('friend-calendar', friend_id=user_id)
         return render(request, "user_detail.html", context)
 
     def post(self, request, user_id):
@@ -536,3 +535,36 @@ class GroupEventDetailsView(View):
             Comment.objects.create(content=form_comment.cleaned_data['content'], user=request.user, group_id=None,
                                    event_id=event_id, create_date=timezone.now)
         return redirect('group_event_details', group_id=group_id, event_id=event_id)
+
+
+class FriendCalendarView(View):
+    context = {}
+
+    def get(self, request, friend_id):
+        self.context['friend'] = User.objects.get(id=friend_id)
+        # Część dopowiedzialna za kalendarz:
+        # use today's date for the calendar
+        d = get_date(self.request.GET.get('day', None))
+
+        # Previous and next month pass to context
+        d = get_date(self.request.GET.get('month', None))
+        self.context['prev_month'] = prev_month(d)
+        self.context['next_month'] = next_month(d)
+
+        # Instantiate our calendar class with today's year and date
+        cal = FriendCalendar(User.objects.get(id=friend_id), d.year, d.month)
+
+        # Call the formatmonth method, which returns our calendar as a table
+        html_cal = cal.formatmonth(withyear=True)
+        self.context['calendar'] = mark_safe(html_cal)
+
+        return render(request, 'friend_calendar.html', self.context)
+
+
+class FriendEventDetailsView(generic.DetailView):
+    template_name = "friend_event_detail.html"
+
+    def get_object(self):
+        event_id = self.kwargs.get("event_id")
+        return get_object_or_404(Event, id=event_id)
+    
