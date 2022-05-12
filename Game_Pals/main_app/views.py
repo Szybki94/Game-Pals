@@ -301,6 +301,23 @@ class UserDetailsView(View):
         return redirect("user_search")
 
 
+class UserPalsView(generic.ListView):
+    model = Invitation
+    template_name = 'friend_list.html'
+
+    def get_queryset(self):
+        queryset = super(UserPalsView, self).get_queryset()
+        queryset = Invitation.objects \
+            .filter(sender_id=self.request.user.id, accepted=True) \
+            .union(Invitation.objects.filter(receiver_id=self.request.user.id, accepted=True))
+        return queryset
+
+
+class DeleteFriendship(generic.DeleteView):
+    model = Invitation
+    success_url = reverse_lazy('user_pals')
+
+
 class FriendRequestsView(View):
     def get(self, request):
         context = {}
@@ -567,4 +584,3 @@ class FriendEventDetailsView(generic.DetailView):
     def get_object(self):
         event_id = self.kwargs.get("event_id")
         return get_object_or_404(Event, id=event_id)
-    

@@ -23,7 +23,8 @@ from main_app.views import MainView, HomeView, LoginView, RegisterView, UserUpda
     UserUpdateView2, UserAddEventView, UserAddGamesView, UserDeleteGameView, UserSearchView,\
     EventDetailsView, UserDetailsView, LogoutView, FriendRequestsView, GroupCreateView, \
     UserGroupsView, GroupDetailView, DeleteComment, DeleteEventComment, MemberUpdateView, AddMemberView, \
-    GroupAddEventView, GroupEventDetailsView, FriendCalendarView, FriendEventDetailsView
+    GroupAddEventView, GroupEventDetailsView, FriendCalendarView, FriendEventDetailsView, UserPalsView, \
+    DeleteFriendship
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -41,6 +42,8 @@ urlpatterns = [
     path('user-search/', login_required(UserSearchView.as_view()), name="user_search"),
     path('event-details/<int:event_id>/', login_required(EventDetailsView.as_view()), name='event_details'),
     path('user-search/<int:user_id>/', login_required(UserDetailsView.as_view()), name='user_details'),
+    path('pals-list/', login_required(UserPalsView.as_view()), name='user_pals'),
+    path('pals-list/<int:pk>/delete', login_required(DeleteFriendship.as_view()), name='delete-friendship'),
     path('friend-requests/', login_required(FriendRequestsView.as_view()), name='friend_requests'),
     path('create-group/', login_required(GroupCreateView.as_view()), name='create_group'),
     path('user-groups/', login_required(UserGroupsView.as_view()), name='user_groups'),
