@@ -71,3 +71,4 @@ class TestUrls(SimpleTestCase):
         url = reverse('user_details', kwargs={'user_id': 1})
         print(resolve(url))
         self.assertEquals(resolve(url).func.view_class, UserDetailsView)
+
