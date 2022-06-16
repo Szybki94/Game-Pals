@@ -1,9 +1,14 @@
+# django modules
 from django import forms
-from .models import Game, Profile
-from PIL import Image
-from django.core.exceptions import ValidationError
-from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, SetPasswordForm
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.forms import ModelForm, DateInput
+
+# models
+from .models import Game, UserGames, Profile, Event, Invitation, Group, Comment
+# utilities
+from PIL import Image
 
 
 class LoginForm(forms.ModelForm):
@@ -25,9 +30,6 @@ class LoginForm(forms.ModelForm):
         return cleaned_data
 
 
-
-
-
 class RegisterForm(UserCreationForm):
     class Meta:
         model = User
@@ -41,7 +43,6 @@ class RegisterForm(UserCreationForm):
         super(RegisterForm, self).__init__(*args, **kwargs)
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'form-control'
-
 
     def clean(self):
         cleaned_data = super().clean()
@@ -91,13 +92,46 @@ class UserUpdateForm2(forms.Form):
             img.thumbnail(new_img)
             img.save(self.avatar.path)
 
-# class Pizza2Form(forms.Form):
-#     size = forms.ChoiceField(label="Wielkość", choices=PIZZA_SIZES, widget=forms.Select)
-#     toppings = forms.MultipleChoiceField(label="Dodatki", widget=forms.CheckboxSelectMultiple)
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         choices = tuple( [ # Lista składana
-#             (topping.id, f'{topping.name} ({topping.price})') # Element to krotka z id i opisem
-#             for topping in Toppings.objects.all()
-#         ] )
-#         self.fields['toppings'].choices = choices
+
+class UserAddEventForm(ModelForm):
+    class Meta:
+        model = Event
+        fields = ['name', 'description', 'start_time']
+        widgets = {"start_time": forms.DateTimeInput(format='%Y-%m-%dT%H:%M',
+                                                     attrs={'class': 'form-control datetimepicker-input',
+                                                            'data-target': '#datetimepicker1'}),
+                   "name": forms.TextInput(attrs={"class": "form-control"}),
+                   "description": forms.Textarea(attrs={"class": "form-control"})
+                   }
+
+
+class UserGameDeleteForm(forms.Form):
+    class Meta:
+        model = UserGames
+        fields = ['id']
+
+
+class SendFriendInvitationForm(forms.Form):
+    class Meta:
+        model = Invitation
+        fields = ['sender', 'receiver']
+
+
+class CreateGroupForm(forms.ModelForm):
+    class Meta:
+        model = Group
+        fields = ['name', 'created_by']
+        widgets = {'name': forms.TextInput(attrs={'class': 'form-control'}),
+                   'created_by': forms.HiddenInput}
+
+
+class GroupCommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content']
+        labels = {
+            'content': "Leave your comment:"
+        }
+        widgets = {
+            'content': forms.Textarea(attrs={'class': 'form-control'})
+                    }

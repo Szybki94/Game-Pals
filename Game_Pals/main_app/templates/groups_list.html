@@ -54,6 +54,31 @@
 
 {% block content %}
 
-    {% include "calendar/calendar.html" %}
+    <table class="table">
+      <tr>
+        <th><h2>Group Name</h2></th>
+        <th><h2>Roles</h2></th>
+      </tr>
+    {% for user_group in object_list %}
+        <tr>
+        <th><a href="{% url 'group-details' user_group.group.id %}">{{ user_group.group.name }}</a></th>
+        <th>
+            {% if user_group.is_admin == 1 and user_group.is_extra_user == 0  %}
+                Admin
+            {% endif %}
+            {% if user_group.is_admin == 1 and user_group.is_extra_user == 1  %}
+                Admin
+            {% endif %}
+            {% if user_group.is_extra_user == 1 and user_group.is_admin == 0%}
+                Extra user
+            {% endif %}
+            {% if user_group.is_admin == 0 and user_group.is_extra_user == 0 %}
+                Normal
+            {% endif %}
+        </th>
+        </tr>
+    {% endfor %}
+
+    </table>
 
 {% endblock %}

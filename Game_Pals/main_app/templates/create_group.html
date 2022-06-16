@@ -54,6 +54,10 @@
 
 {% block content %}
 
-    {% include "calendar/calendar.html" %}
+    <form method="post" action="">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" name="submit" class="btn btn-info btn-md" value="Submit">
+    </form>
 
 {% endblock %}

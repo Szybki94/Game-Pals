@@ -53,7 +53,8 @@
 
 
 {% block content %}
-
-    {% include "calendar/calendar.html" %}
+    <br>
+    <h3>{{ friend.username }}'s Calendar:</h3><hr>
+    {% include "calendar/calendar_friend.html" %}
 
 {% endblock %}

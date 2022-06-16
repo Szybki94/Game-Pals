@@ -1,0 +1,9 @@
+{% extends 'home.html' %}
+
+{% block content %}
+    <br>
+    <h1 class="modal-header">{{ event.name }}</h1>
+    <h3 class="modal-header">[{{ event.start_time|date:'d-m-Y H:i' }}]</h3><br>
+    <div class="text">{{ event.description }}</div>
+
+{% endblock %}

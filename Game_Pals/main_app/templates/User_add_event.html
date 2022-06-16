@@ -3,7 +3,7 @@
 
 
 {% block title%}
-    Game-Pals Home
+    Add event
 {% endblock %}
 
 
@@ -17,19 +17,13 @@
     <div class="text-center"><h4>Player games</h4></div>
     <hr>
     {% for game in games %}
-    <a class="list-group-item list-group-item-action" href="fill-me-with-link!!!">
-        {{ game.name }}<a class="text-end" methods="POST" href="/delete-games/{{ game.id }}">Delete</a>
-    </a>
-
+    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="fill-me-with-link!!!">{{ game.name }}</a>
         {% empty %}
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'user_add_games' %}">
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="fill-me-with-link!!!">
                 You dont play games? ;(<br>
                 Pick some!!!
             </a>
     {% endfor %}
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'user_add_games' %}">
-                Add more games
-            </a>
 
     {% if profile.personal_info %}
     <br>
@@ -54,6 +48,6 @@
 
 {% block content %}
 
-    {% include "calendar/calendar.html" %}
+    {% include "date_picker/date_picker.html" %}
 
 {% endblock %}
