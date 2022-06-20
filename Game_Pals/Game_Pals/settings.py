@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-my_apps = ['main_app']
+my_apps = ['Home']
 
 INSTALLED_APPS += my_apps
 
@@ -66,7 +66,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 # My additional Context Processors
-                'main_app.context_processors.user_processor',
+                # 'main_app.context_processors.user_processor',
             ],
         },
     },
