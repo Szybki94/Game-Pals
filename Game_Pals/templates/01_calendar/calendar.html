@@ -1,0 +1,16 @@
+{% extends '01_calendar/calendar_base.html' %}
+
+{% block content %}
+    <br>
+    <br>
+    <div class="clearfix">
+    {% comment %}
+	    <a class="btn btn-info float-start" href="{% url 'user_calendar' %}?{{ prev_month }}"> Previous Month </a>
+        <a class="btn btn-info float-end" href="{% url 'user_add_event' %}"> Add event </a>
+	    <a class="btn btn-info float-end" href="{% url 'user_calendar' %}?{{ next_month }}"> Next Month </a>
+    {% endcomment %}
+    </div>
+    <hr>
+    {{ calendar }}
+
+{% endblock %}

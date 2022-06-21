@@ -25,7 +25,7 @@ class MainView(View):
 
     def get(self, request):
         if request.user.is_authenticated:
-            return redirect("home:home")
+            return redirect("user:home-view")
         else:
             return redirect("home:login")
 
@@ -48,7 +48,7 @@ class LoginView(View):
         if user:
             login(request, user)
             messages.success(request, "You logged in")
-            return redirect("home:home")
+            return redirect("user:home-view")
         else:
             messages.error(request, form.errors)
             return render(request, "login_page.html", {})
@@ -125,7 +125,7 @@ class UserUpdateView2(LoginRequiredMixin, View):
             profile.personal_info = form.cleaned_data["personal_info"]
             profile.save()
             messages.success(request, "Step 3/3 completed")
-            return redirect("User:home")
+            return redirect("user:home-view")
         else:
             messages.success(request, "Something went wrong, please try again")
             return render(request, "register_page_3.html", {"form": form})
@@ -135,4 +135,4 @@ class LogoutView(LoginRequiredMixin, View):
     # Allow user to logout
     def get(self, request):
         logout(request)
-        return redirect("User:home")
+        return redirect("home:home")

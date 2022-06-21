@@ -20,4 +20,3 @@ class Game(models.Model):
 class UserGames(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     game = models.ForeignKey(Game, on_delete=models.CASCADE, null=True)
-

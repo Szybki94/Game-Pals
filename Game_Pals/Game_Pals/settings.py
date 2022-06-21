@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-my_apps = ['Home']
+my_apps = ['Group', 'Home', 'User']
 
 INSTALLED_APPS += my_apps
 
@@ -57,7 +57,7 @@ ROOT_URLCONF = 'Game_Pals.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -65,8 +65,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
                 # My additional Context Processors
-                # 'main_app.context_processors.user_processor',
+                'context_processors.user_processor',
             ],
         },
     },
@@ -122,9 +123,9 @@ USE_TZ = True
 MEDIA_URL = '/images/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "static/images")
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "main_app/static")
-]
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
