@@ -18,12 +18,17 @@ from django.conf.urls.static import static
 
 from django.urls import path
 
-from .views import HomeView
+from .views import EventDetailsView, HomeView, UserAddGamesView, UserDeleteGameView, UserAddEventView
 
 
 app_name = "user"
 urlpatterns = [
     path('home/', HomeView.as_view(), name="home-view"),
+    path('calendar', HomeView.as_view(), name="user_calendar"),
+    path('add-event/', UserAddEventView.as_view(), name="user_add_event"),
+    path('event-details/<int:event_id>/', EventDetailsView.as_view(), name='event_details'),
+    path('add-games/', UserAddGamesView.as_view(), name="user_add_games"),
+    path('delete-games/<int:game_id>/', UserDeleteGameView.as_view(), name="user_delete_games"),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

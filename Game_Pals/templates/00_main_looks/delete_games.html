@@ -16,13 +16,13 @@
     <hr>
     <div class="text-center"><h4>Player games</h4></div>
     <hr>
-    {% for game in GAMES %}
+    {% for Game in games %}
     <a class="list-group-item list-group-item-action" href="fill-me-with-link!!!">
-        {{ game.name }}<a class="text-end" methods="POST" href="/delete-games/{{ game.id }}">Delete</a>
+        {{ game.name }}
     </a>
 
         {% empty %}
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#">
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'user:user_add_games' %}">
                 You dont play games? ;(<br>
                 Pick some!!!
             </a>
@@ -40,15 +40,23 @@
         </div>
     {% endif %}
 
+
 {% endblock %}
 
 
-{% block dropdown_menu %}
-{% endblock %}
+{#{% block dropdown_menu %}#}
+{#{% endblock %}#}
 
 
 {% block content %}
 
-    {% include "01_calendar/calendar.html" %}
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{ form }}
+        <br>
+        <br>
+        <br>
+        <input type="submit" name="submit" class="btn btn-warning btn-md" value="Delete game CONFIRM">
+    </form>
 
 {% endblock %}
