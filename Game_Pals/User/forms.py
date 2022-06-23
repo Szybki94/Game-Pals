@@ -7,6 +7,8 @@ from django.forms import ModelForm
 # MODELS
 from .models import Event
 from Home.models import Game, UserGames
+
+
 # UTILITIES
 
 
@@ -26,3 +28,10 @@ class UserGameDeleteForm(forms.Form):
     class Meta:
         model = UserGames
         fields = ['id']
+
+
+class EventDeleteForm(forms.Form):
+    class Meta:
+        model = Event
+        fields = ['id']
+        widgets = {'id': forms.HiddenInput()}

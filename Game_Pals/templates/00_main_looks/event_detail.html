@@ -1,0 +1,24 @@
+{% extends '00_main_looks/user-home.html' %}
+
+{% block content %}
+    <br>
+    <h1 class="modal-header">{{ event.name }}</h1>
+    <h3 class="modal-header">[{{ event.start_time|date:'d-m-Y H:i' }}]</h3><br>
+    <div class="text">{{ event.description }}</div>
+    <br>
+    <hr>
+    <br>
+    <a href="{% url 'user:user_delete_event_confirm' event.id %}">
+        <button type="submit" class="btn btn-danger float-end">Delete Event</button>
+    </a>
+
+
+
+
+{% endblock %}
+
+<script>
+$(document).on('click', '.some_class', function(){
+return confirm('Are you sure you want to update this?');
+})
+</script>

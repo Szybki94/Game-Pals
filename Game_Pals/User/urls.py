@@ -18,7 +18,7 @@ from django.conf.urls.static import static
 
 from django.urls import path
 
-from .views import EventDetailsView, HomeView, UserAddGamesView, UserDeleteGameView, UserAddEventView
+from .views import EventDeleteView, EventDetailsView, HomeView, UserAddGamesView, UserDeleteGameView, UserAddEventView
 
 
 app_name = "user"
@@ -27,6 +27,7 @@ urlpatterns = [
     path('calendar', HomeView.as_view(), name="user_calendar"),
     path('add-event/', UserAddEventView.as_view(), name="user_add_event"),
     path('event-details/<int:event_id>/', EventDetailsView.as_view(), name='event_details'),
+    path('event-delete/<int:event_id>/', EventDeleteView.as_view(), name='user_delete_event_confirm'),
     path('add-games/', UserAddGamesView.as_view(), name="user_add_games"),
     path('delete-games/<int:game_id>/', UserDeleteGameView.as_view(), name="user_delete_games"),
 ]

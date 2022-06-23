@@ -1,6 +1,6 @@
 from django.db import transaction
 from django.db.models import Q
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, render, redirect, HttpResponse
 from django.utils.safestring import mark_safe
 from django.views import View
 from django.views.generic import DetailView
@@ -15,7 +15,7 @@ import calendar
 from datetime import date, datetime, timedelta
 
 # FORMS
-from .forms import UserAddEventForm, UserGameDeleteForm
+from .forms import EventDeleteForm, UserAddEventForm, UserGameDeleteForm
 from Home.forms import UserUpdateForm1
 
 # MY UTILS
@@ -94,6 +94,22 @@ class EventDetailsView(DetailView):
     def get_object(self):
         id_url = self.kwargs.get("event_id")
         return get_object_or_404(Event, id=id_url)
+
+
+class EventDeleteView(View):
+
+    def get(self, request, event_id):
+        ctx = {'form': EventDeleteForm,
+               'event': Event.objects.get(id=event_id)}
+        return render(request, "00_main_looks/event_delete_confirm.html", ctx)
+
+    def post(self, request, event_id):
+        form = EventDeleteForm(request.POST)
+        if form.is_valid():
+            obj_id = form.cleaned_data.get('id')
+            print(obj_id)
+            # Event.objects.get(id=event_id).delete()
+        return redirect("user:home-view")
 
 
 # Pace for user -> edit profile pic and personal info
