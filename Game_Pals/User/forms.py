@@ -12,6 +12,8 @@ from Home.models import Game, UserGames
 # UTILITIES
 
 
+# FORMS
+
 class UserAddEventForm(ModelForm):
     class Meta:
         model = Event

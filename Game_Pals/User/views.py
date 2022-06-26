@@ -106,9 +106,7 @@ class EventDeleteView(View):
     def post(self, request, event_id):
         form = EventDeleteForm(request.POST)
         if form.is_valid():
-            obj_id = form.cleaned_data.get('id')
-            print(obj_id)
-            # Event.objects.get(id=event_id).delete()
+            Event.objects.get(id=event_id).delete()
         return redirect("user:home-view")
 
 

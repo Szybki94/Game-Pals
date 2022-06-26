@@ -1,0 +1,70 @@
+{% extends "00_main_looks/01_template.html" %}
+
+
+
+{% block title%}
+    Game-Pals Home
+{% endblock %}
+
+
+{% block left_menu %}
+    <br>
+    <hr>
+    <div class="text-center"><h3>{{ USER.username }}</h3></div>
+    <hr>
+    <img class="align-items-center" src="/images/{{ PROFILE.avatar }}" alt="Avatar" class="avatar">
+    <hr>
+    <div class="text-center"><h4>Player games</h4></div>
+    <hr>
+    {% for game in GAMES %}
+    <a class="list-group-item list-group-item-action" href="fill-me-with-link!!!">
+        {{ game.name }}<a class="text-end" methods="POST" href="/delete-games/{{ game.id }}">Delete</a>
+    </a>
+
+        {% empty %}
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'user:user_add_games' %}">
+                You dont play games? ;(<br>
+                Pick some!!!
+            </a>
+    {% endfor %}
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'user:user_add_games' %}">
+                Add more games
+            </a>
+
+    {% if PROFILE.personal_info %}
+    <br>
+    <div class="text-center"><h4>Player info</h4></div>
+    <hr>
+        <div class="text-break list-group-item list-group-item-action list-group-item-light p-3">
+            {{ PROFILE.personal_info }}
+        </div>
+    {% endif %}
+
+
+{% endblock %}
+
+
+{#{% block dropdown_menu %}#}
+{#{% endblock %}#}
+
+
+{% block content %}
+
+    <form method="POST" action="">
+    {% csrf_token %}
+        <label for="username" class="text-info">Username:</label><br>
+        <input type="text" name="username" id="username" class="form-control">
+        <input type="submit" name="submit" class="btn btn-info btn-md" value="Search">
+    </form>
+    <br>
+    {% for user in users %}
+    <a class="list-group-item list-group-item-action" href="{% url 'society:user_search' %}{{ user.id }}">
+        {{ user.username }}
+{#        <a class="text-end" methods="POST" href="/delete-games/{{ game.id }}">Delete</a>#}
+    </a>
+
+        {% empty %}
+            {{ message }}
+    {% endfor %}
+
+{% endblock %}
