@@ -7,7 +7,14 @@ class Profile(models.Model):
     avatar = models.ImageField(default='avatars/random_avatar.jpg', upload_to="avatars")
     personal_info = models.TextField(blank=True, null=True)
     # Line below is for later to improve FRIENDS MECHANISMS
-    # friends = models.ManyToManyField(User, related_name='friends', blank=True)
+    friendship = models.ManyToManyField('self', related_name='friends', blank=True,
+                                        symmetrical=False, through='Friendship', through_fields=('sender', 'receiver'))
+
+
+class Friendship(models.Model):
+    sender = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="sender")
+    receiver = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="receiver")
+    accepted = models.BooleanField(null=True)
 
 
 class Game(models.Model):
