@@ -44,6 +44,10 @@
 
 
 {% block dropdown_menu %}
+<div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="{% url 'society:user_search' %}">Search for Pal</a>
+    <div class="dropdown-divider"></div>
+         <a class="dropdown-item" href="{% url 'home:logout' %}">LOGOUT</a>
 {% endblock %}
 
 

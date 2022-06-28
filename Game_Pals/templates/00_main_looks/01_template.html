@@ -20,13 +20,17 @@ Test
 {% block dropdown_menu %}
     {% comment %}
         <a class="dropdown-item" href="{% url 'user_groups' %}">Groups</a>
-        <a class="dropdown-item" href="{% url 'user_pals' %}">Pals</a>
-        <div class="dropdown-divider"></div>
-        <a class="dropdown-item" href="{% url 'user_search' %}">Search for Pal</a>
+
         <a class="dropdown-item" href="{% url 'create_group' %}">Create Group</a>
-        <div class="dropdown-divider"></div>
-         <a class="dropdown-item" href="{% url 'logout' %}">LOGOUT</a>
+
     {% endcomment %}
+    <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="{% url 'society:user_pals' %}">Pals</a>
+        <a class="dropdown-item" href="{% url 'society:user_search' %}">Search for Pal</a>
+    <div class="dropdown-divider"></div>
+
+    <div class="dropdown-divider"></div>
+         <a class="dropdown-item" href="{% url 'home:logout' %}">LOGOUT</a>
 {% endblock %}
 
 

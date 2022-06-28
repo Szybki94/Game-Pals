@@ -2,10 +2,11 @@ from django.contrib.auth.admin import User
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render, redirect, HttpResponse
 from django.views import View
+from django.views.generic import ListView
 
 
 # MODELS
-from Home.models import Friendship, UserGames
+from Home.models import Friendship, Profile, UserGames
 
 # PYTHON MODULES
 
@@ -36,22 +37,32 @@ class UserDetailsView(View):
 
     def get(self, request, user_id):
         context = {}
+
+        # Some variables for clean code
         user = request.user
+        user_profile = user.profile
+        other_user = User.objects.get(id=user_id)
+        other_user_profile = other_user.profile
+
+        # Code bellow responsible for getting info about searched user
         context['searched_user'] = User.objects.get(id=user_id)
         context['user_games'] = UserGames.objects.filter(user_id=user_id)
-        # context['friends_list'] = request.user.profile.friendship.filter()
+
+        # Code bellow is for checking invitations status for loading form in page
         context['form'] = SendFriendInvitationForm()
-        # Zamieszanie ze sprawdzaniem istniejącego invitation:
+        context['friends_list'] = request.user.profile.friends.filter()
+
+        # Check for invitation as sender
         try:
-            context['user_friendship'] = Friendship.objects.get(sender_id=request.user.id, receiver_id=user_id)
+            context['user_sender'] = Friendship.objects.get(sender=user_profile, receiver=other_user_profile)
         except Friendship.DoesNotExist:
-            context['user_friendship'] = None
+            context['sender'] = None
+
+        # Check for invitation as receiver
         try:
-            context['receiver_friendship'] = Friendship.objects.get(sender_id=user_id, receiver_id=request.user.id)
+            context['user_receiver'] = Friendship.objects.get(receiver=user_profile, sender=other_user_profile)
         except Friendship.DoesNotExist:
-            context['receiver_friendship'] = None
-        context['user_friendships'] = Friendship.objects.filter(sender_id=request.user.id)
-        context['receiver_friendships'] = Friendship.objects.filter(sender_id=user_id)
+            context['user_receiver'] = None
 
         # Poniższy fragment kodu przekieruje na kalendarz użytkownika, jeśli są znajomymi
         # if Invitation.objects.filter(sender_id=request.user.id, receiver_id=user_id, accepted=True).exists() \
@@ -60,9 +71,15 @@ class UserDetailsView(View):
         return render(request, "00_main_looks/user_detail.html", context)
 
     def post(self, request, user_id):
+        # Some variables for clean code
+        user = request.user
+        user_profile = user.profile
+        other_user = User.objects.get(id=user_id)
+        other_user_profile = other_user.profile
+
         form = SendFriendInvitationForm(request.POST)
         if form.is_valid():
-            Friendship.objects.create(sender_id=request.user.id, receiver_id=user_id)
+            Friendship.objects.create(sender_id=user_profile.id, receiver_id=other_user_profile.id)
         return redirect("society:user_search")
 
 
@@ -87,3 +104,16 @@ class FriendRequestsView(View):
         elif request.POST.get('answer') == "Decline" or "Cancel":
             relationship.delete()
             return redirect('society:friend_requests')
+
+
+class UserPalsView(ListView):
+    model = Friendship
+    template_name = '00_main_looks/friend_list.html'
+
+    # Overwrite queryset method because is need to connect records where user is SENDER and RECEIVER
+    def get_queryset(self):
+        queryset = super(UserPalsView, self).get_queryset()
+        queryset = Friendship.objects \
+            .filter(sender=self.request.user.profile, accepted=True) \
+            .union(Friendship.objects.filter(receiver=self.request.user.profile, accepted=True))
+        return queryset

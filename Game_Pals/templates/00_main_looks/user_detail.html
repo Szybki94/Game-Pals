@@ -13,10 +13,28 @@
     {% endfor %}
     </ul>
 
-    {% if searched_user not in friends_list %}
+    {% if searched_user.profile not in friends_list %}
+        {% if not user_sender %}
+            {% if not user_receiver %}
+                    <form method="POST" action="">
+                    {% csrf_token %}
+                    {{ form }}
+                    <input type="submit" name="submit" class="btn btn-warning btn-md" value="Add to friend">
+                    </form>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+
+{#    Jeśli użytkownik nie jest w znajomych wyświetl add friend button<br>#}
+{#    Jeśli jest w znajomych wyświetl detail view :)#}
+
+{% endblock %}
+
+{% comment %}
+    {% if searched_user.profile not in friends_list %}
         {% if user_invitation not in user_invitations %}
             {% if receiver_invitation not in receiver_invitations %}
-                {% if user != searched_user %}
+                {% if PROFILE != searched_user.profile %}
                     <form method="POST" action="">
                     {% csrf_token %}
                     {{ form }}
@@ -26,8 +44,4 @@
             {% endif %}
         {% endif %}
     {% endif %}
-
-{#    Jeśli użytkownik nie jest w znajomych wyświetl add friend button<br>#}
-{#    Jeśli jest w znajomych wyświetl detail view :)#}
-
-{% endblock %}
+{% endcomment %}

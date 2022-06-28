@@ -1,4 +1,4 @@
-{% extends "00_main_looks/00_base.html" %}
+{% extends "00_main_looks/01_template.html" %}
 
 
 
@@ -58,8 +58,11 @@
         <form method="post" action="">
         {% csrf_token %}
             <div class="form-group">
-                <label for="first_name" class="list-group-item list-group-item-action">
-                    {{ request.sender.user.username }}</label>
+                <a href="{% url 'society:user_details' request.sender.user.id %}">
+                    <label for="first_name" class="list-group-item list-group-item-action">
+                        {{ request.sender.user.username }}
+                    </label>
+                </a>
                 <input type="hidden" id="request" name="request" value="{{ request.id }}">
                 <input type="submit" name="answer" class="btn btn-info btn-md" value="Submit">
                 <input type="submit" name="answer" class="btn btn-info btn-md" value="Decline">
@@ -75,8 +78,11 @@
         <form method="post" action="">
         {% csrf_token %}
             <div class="form-group">
-                <label for="first_name" class="list-group-item list-group-item-action">
-                    {{ send.receiver.user.username}}</label>
+                <a href="{% url 'society:user_details' send.receiver.user.id %}">
+                    <label for="first_name" class="list-group-item list-group-item-action">
+                        {{ send.receiver.user.username}}
+                    </label>
+                </a>
                 <input type="hidden" id="request" name="request" value="{{ send.id }}">
                 <input type="submit" name="answer" class="btn btn-info btn-md" value="Cancel">
             </div>

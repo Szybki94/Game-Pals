@@ -135,4 +135,4 @@ class LogoutView(LoginRequiredMixin, View):
     # Allow user to logout
     def get(self, request):
         logout(request)
-        return redirect("home:home")
+        return redirect("home:login")
