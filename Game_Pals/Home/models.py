@@ -6,7 +6,6 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', null=True)
     avatar = models.ImageField(default='avatars/random_avatar.jpg', upload_to="avatars")
     personal_info = models.TextField(blank=True, null=True)
-    # Line below is for later to improve FRIENDS MECHANISMS
     friendship = models.ManyToManyField('self', related_name='friends', blank=True,
                                         symmetrical=False, through='Friendship', through_fields=('sender', 'receiver'))
 

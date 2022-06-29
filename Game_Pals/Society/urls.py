@@ -18,7 +18,7 @@ from django.conf.urls.static import static
 
 from django.urls import path
 
-from .views import FriendRequestsView, UserDetailsView, UserPalsView, UserSearchView
+from .views import DeleteFriendship, FriendCalendarView, FriendRequestsView, UserDetailsView, UserPalsView, UserSearchView
 
 
 app_name = "society"
@@ -27,6 +27,10 @@ urlpatterns = [
     path('user-search/<int:user_id>/', UserDetailsView.as_view(), name='user_details'),
     path('friend-requests/', FriendRequestsView.as_view(), name='friend_requests'),
     path('pals-list/', UserPalsView.as_view(), name='user_pals'),
+    path('pals-list/<int:pk>/delete', DeleteFriendship.as_view(), name='delete_friendship'),
+    path('friend-calendar/<int:friend_id>/', FriendCalendarView.as_view(), name='friend_calendar'),
+    path('friend-calendar/<int:friend_id>/calendar', FriendCalendarView.as_view(),
+         name="friend_calendar_details"),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

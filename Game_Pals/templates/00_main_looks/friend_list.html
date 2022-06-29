@@ -4,17 +4,17 @@
 
     {% for invitation in object_list %}
         {% if invitation.receiver_id != user.profile.id %}
-            <form action="#" method="POST">
+            <form action="{% url 'society:delete_friendship' invitation.id %}" method="POST">
                 {% csrf_token %}
-                    <a class="list-group-item list-group-item-action" href="{% url 'society:user_search' %}{{ invitation.receiver.user.id }}">
+                    <a class="list-group-item list-group-item-action" href="{% url 'society:user_details' invitation.receiver.user.id %}">
                     {{ invitation.receiver.user.username }} <input type="submit" value="Delete from Pals" class="btn-danger float-end">
                 </a>
             </form>
         {% endif %}
         {% if invitation.sender_id != user.profile.id %}
-            <form action="#" method="POST">
+            <form action="{% url 'society:delete_friendship' invitation.id %}" method="POST">
                 {% csrf_token %}
-                    <a class="list-group-item list-group-item-action" href="{% url 'society:user_search' %}{{ invitation.sender.user.id }}">
+                    <a class="list-group-item list-group-item-action" href="{% url 'society:user_details' invitation.sender.user.id %}">
                     {{ invitation.sender.user.username }} <input type="submit" value="Delete from Pals" class="btn-danger float-end">
                 </a>
             </form>
@@ -22,29 +22,3 @@
     {% endfor %}
 
 {% endblock %}
-
-
-{% comment %}
-{% block content %}
-
-    {% for invitation in object_list %}
-        {% if invitation.receiver.id != user.id %}
-            <form action="{% url 'delete-friendship' invitation.id %}" method="POST">
-                {% csrf_token %}
-                    <a class="list-group-item list-group-item-action" href="{% url 'user_search' %}{{ invitation.receiver.id }}">
-                    {{ invitation.receiver.username }} <input type="submit" value="Delete from Pals" class="btn-danger float-end">
-                </a>
-            </form>
-        {% endif %}
-        {% if invitation.sender.id != user.id %}
-            <form action="{% url 'delete-friendship' invitation.id %}" method="POST">
-                {% csrf_token %}
-                    <a class="list-group-item list-group-item-action" href="{% url 'user_search' %}{{ invitation.sender.id }}">
-                    {{ invitation.sender.username }} <input type="submit" value="Delete from Pals" class="btn-danger float-end">
-                </a>
-            </form>
-        {% endif %}
-    {% endfor %}
-
-{% endblock %}
-{% endcomment %}
