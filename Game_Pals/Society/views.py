@@ -76,7 +76,7 @@ class UserSearchView(View):
 
     def get(self, request):
         context = {}
-        return render(request, "00_main_looks/user_search.html", context)
+        return render(request, "user_search.html", context)
 
     def post(self, request):
         context = {}
@@ -85,7 +85,7 @@ class UserSearchView(View):
         message = "There is no search results"
         context['users'] = searched_users
         context['message'] = message
-        return render(request, "00_main_looks/user_search.html", context)
+        return render(request, "user_search.html", context)
 
 
 class UserDetailsView(View):
@@ -129,7 +129,7 @@ class UserDetailsView(View):
                             receiver=user_profile,
                             accepted=True).exists():
             return redirect('society:friend_calendar', friend_id=user_id)
-        return render(request, "00_main_looks/user_detail.html", context)
+        return render(request, "user_detail.html", context)
 
     def post(self, request, user_id):
         # Some variables for clean code
@@ -139,6 +139,7 @@ class UserDetailsView(View):
         other_user_profile = other_user.profile
 
         form = SendFriendInvitationForm(request.POST)
+
         if form.is_valid():
             Friendship.objects.create(sender_id=user_profile.id, receiver_id=other_user_profile.id)
         return redirect("society:user_search")
@@ -151,7 +152,7 @@ class FriendRequestsView(View):
             Q(receiver_id=request.user.profile) & Q(accepted__isnull=True))
         context['user_sent_requests'] = Friendship.objects.filter(
             Q(sender_id=request.user.profile) & Q(accepted__isnull=True))
-        return render(request, "00_main_looks/friend_requests.html", context)
+        return render(request, "friend_requests.html", context)
 
     def post(self, request):
         context = {}
@@ -169,7 +170,7 @@ class FriendRequestsView(View):
 
 class UserPalsView(ListView):
     model = Friendship
-    template_name = '00_main_looks/friend_list.html'
+    template_name = 'friend_list.html'
 
     # Overwrite queryset method because is need to connect records where user is SENDER and RECEIVER
     def get_queryset(self):
@@ -207,7 +208,7 @@ class FriendCalendarView(FriendshipMixin, View):
         html_cal = cal.formatmonth(withyear=True)
         self.context['calendar'] = mark_safe(html_cal)
 
-        return render(request, '00_main_looks/friend_calendar.html', self.context)
+        return render(request, 'friend_calendar.html', self.context)
 
 
 # Should add bellow FriendshipMixin,

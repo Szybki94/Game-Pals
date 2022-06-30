@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-my_apps = ['Group', 'Home', 'User']
+my_apps = ['Group', 'Home', 'Society', 'User']
 
 INSTALLED_APPS += my_apps
 
@@ -57,8 +57,8 @@ ROOT_URLCONF = 'Game_Pals.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',

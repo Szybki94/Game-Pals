@@ -48,7 +48,7 @@ def next_month(d):
 # ALL VIEWS BELLOW
 class HomeView(ListView):
     model = Event
-    template_name = '00_main_looks/user-home.html'
+    template_name = 'user_home.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -73,7 +73,7 @@ class HomeView(ListView):
 
 class UserAddEventView(View):
     def get(self, request):
-        return render(request, '00_main_looks/User_add_event.html', {'form': UserAddEventForm})
+        return render(request, 'User_add_event.html', {'form': UserAddEventForm})
 
     def post(self, request):
         user = request.user
@@ -89,7 +89,7 @@ class UserAddEventView(View):
 
 
 class EventDetailsView(DetailView):
-    template_name = "00_main_looks/event_detail.html"
+    template_name = "event_detail.html"
 
     def get_object(self):
         id_url = self.kwargs.get("event_id")
@@ -101,7 +101,7 @@ class EventDeleteView(View):
     def get(self, request, event_id):
         ctx = {'form': EventDeleteForm,
                'event': Event.objects.get(id=event_id)}
-        return render(request, "00_main_looks/event_delete_confirm.html", ctx)
+        return render(request, "event_delete_confirm.html", ctx)
 
     def post(self, request, event_id):
         form = EventDeleteForm(request.POST)
@@ -119,7 +119,7 @@ class UserAddGamesView(View):
     ctx = {"form": UserUpdateForm1}
 
     def get(self, request):
-        return render(request, "00_main_looks/add_games.html", self.ctx)
+        return render(request, "add_games.html", self.ctx)
 
     def post(self, request):
         form = UserUpdateForm1(request.POST)
@@ -133,7 +133,7 @@ class UserAddGamesView(View):
                 user.games.add(game)
             return redirect("user:home-view")
         else:
-            return render(request, "00_main_looks/add_games.html", {"form": form})
+            return render(request, "add_games.html", {"form": form})
 
 
 class UserDeleteGameView(View):
@@ -141,7 +141,7 @@ class UserDeleteGameView(View):
         context = {}
         user = request.user
         context['form'] = UserGameDeleteForm
-        return render(request, "00_main_looks/delete_games.html", context)
+        return render(request, "delete_games.html", context)
 
     def post(self, request, game_id):
         form = UserGameDeleteForm(request.POST)
