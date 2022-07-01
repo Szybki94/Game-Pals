@@ -1,14 +1,30 @@
-{% extends 'calendar/calendar_base.html' %}
+{% extends '01_calendar/calendar_base.html' %}
 
 {% block content %}
     <br>
     <br>
     <div class="clearfix">
-	    <a class="btn btn-info float-start" href="{% url 'group_calendar' group.id %}?{{ prev_month }}"> Previous Month </a>
-        <a class="btn btn-info float-end" href="{% url 'group_add_event' group.id %}"> Add event </a>
-	    <a class="btn btn-info float-end" href="{% url 'group_calendar' group.id %}?{{ next_month }}"> Next Month </a>
+	    <a class="btn btn-info float-start" href="{% url 'group:group_calendar' group.id %}?{{ prev_month }}"> Previous Month </a>
+        <a class="btn btn-info float-end" href="{% url 'group:group_add_event' group.id %}"> Add event </a>
+	    <a class="btn btn-info float-end" href="{% url 'group:group_calendar' group.id %}?{{ next_month }}"> Next Month </a>
     </div>
     <hr>
     {{ calendar }}
 
 {% endblock %}
+
+
+{% comment %}
+    {% block content %}
+        <br>
+        <br>
+        <div class="clearfix">
+            <a class="btn btn-info float-start" href="{% url 'group:group_calendar' group.id %}?{{ prev_month }}"> Previous Month </a>
+            <a class="btn btn-info float-end" href="{% url 'group:group_add_event' group.id %}"> Add event </a>
+            <a class="btn btn-info float-end" href="{% url 'group:group_calendar' group.id %}?{{ next_month }}"> Next Month </a>
+        </div>
+        <hr>
+        {{ calendar }}
+
+    {% endblock %}
+{% endcomment %}

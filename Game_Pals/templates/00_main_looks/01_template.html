@@ -45,11 +45,11 @@ Test
 
 
 {% block dropdown_menu %}
-<!--        Tu będzie link do Grup (komentarz poniżej)-->
         <a class="dropdown-item" href="{% url 'society:user_pals' %}">Pals</a>
+        <a class="dropdown-item" href="{% url 'group:user_groups' %}">Groups</a>
     <div class="dropdown-divider"></div>
         <a class="dropdown-item" href="{% url 'society:user_search' %}">Search for Pal</a>
-<!--        Tu będzie link do tworzenia grupy (komentarz poniżej)-->
+        <a class="dropdown-item" href="{% url 'group:create_group' %}">Create Group</a>
     <div class="dropdown-divider"></div>
 
     <div class="dropdown-divider"></div>

@@ -1,0 +1,29 @@
+{% extends "group_detail.html" %}
+
+
+
+{% block title %}
+    G-P {{ event.name }}
+{% endblock %}
+
+
+{% block content %}
+
+    <br>
+        <h1 class="modal-header">{{ event.name }}</h1>
+        <h3 class="modal-header">[{{ event.start_time|date:'d-m-Y H:i' }}]</h3><br>
+        <div class="text">{{ event.description }}</div><br><hr>
+    <br>
+        <hr>
+        {% if is_admin or is_extra == True %}
+            <br>
+            <a href="{% url 'group:group_delete_event_confirm' group.id event.id %}">
+                <button type="submit" class="btn btn-danger float-end">Delete Event</button>
+            </a>
+        {% endif %}
+
+    {% comment %}
+        {% include "add_comment/comment_event_section.html" %}
+    {% endcomment %}
+
+{% endblock %}
