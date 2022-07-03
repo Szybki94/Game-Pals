@@ -1,0 +1,25 @@
+{% extends "group_detail.html" %}
+
+
+{% block content %}
+    <br>
+    <h2>Friends to add:</h2>
+    <br>
+    {% for friend in friends_to_invite %}
+        <form action="" method="POST">
+            {% csrf_token %}
+                <input type="hidden" name="friend_id" value="{{ friend.user.id }}">
+                <a class="list-group-item list-group-item-action" href="{% url 'society:user_search' %}{{ friend.id }}">
+                    {{ friend.user.username }}
+                <input type="submit" name="add_normal" class="btn btn-info" value="Add as normal">
+                <input type="submit" name="add_extra" class="btn btn-warning" value="Add as extra">
+                </a>
+        </form>
+            <br>
+
+
+    {% empty %}
+        Find yourself pals to play with ;)
+    {% endfor %}
+
+{% endblock %}
