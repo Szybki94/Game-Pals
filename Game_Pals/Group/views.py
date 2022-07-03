@@ -146,7 +146,7 @@ class GroupAddEventView(View):
             self.context['is_extra'] = True
         else:
             self.context['is_extra'] = False
-        # html user_add_event nadaje się do tego dobrze, nie trzeba modyfikować kodu :)
+        # html user_add_event is the same, there is no reason to write new code ;)
         return render(request, 'group_add_event.html', self.context)
 
     def post(self, request, group_id):
@@ -169,10 +169,10 @@ class GroupEventDetailsView(View):
     def get(self, request, group_id, event_id):
         self.context['group'] = Group.objects.get(id=group_id)
         self.context['group_members'] = UserGroup.objects.filter(group_id=group_id).order_by('user__username')
-        # self.context['comments'] = Comment.objects.filter(group_id=None, event_id=event_id).order_by('create_date')
+        self.context['comments'] = Comment.objects.filter(group_id=None, event_id=event_id).order_by('create_date')
         self.context['event'] = Event.objects.get(id=event_id)
-        # Tutaj nada się ten sam formularz co do dodawania komentarza w grupie
-        # self.context['form_comment'] = GroupCommentForm
+        # Same form as for adding comment in whole Group Section
+        self.context['form_comment'] = GroupCommentForm
         if UserGroup.objects.filter(group_id=group_id, user_id=request.user.id, is_admin=True):
             self.context['is_admin'] = True
         else:
@@ -188,7 +188,7 @@ class GroupEventDetailsView(View):
         if form_comment.is_valid():
             Comment.objects.create(content=form_comment.cleaned_data['content'], user=request.user, group_id=None,
                                    event_id=event_id, create_date=timezone.now)
-        return redirect('group_event_details', group_id=group_id, event_id=event_id)
+        return redirect('group:group_event_details', group_id=group_id, event_id=event_id)
 
 
 # Need to add GroupMemberMixin
@@ -214,7 +214,7 @@ class AddMemberView(View):
     def get(self, request, group_id):
         self.context['group'] = Group.objects.get(id=group_id)
         self.context['group_members'] = UserGroup.objects.filter(group_id=group_id).order_by('user__username')
-        # self.context['comments'] = Comment.objects.filter(group_id=group_id, event_id=None).order_by('create_date')
+        self.context['comments'] = Comment.objects.filter(group_id=group_id, event_id=None).order_by('create_date')
 
         # Whole mess bellow is because if statments in jinja did not work properly (for now is enough good):
         self.context['friends_to_invite'] = request.user.profile.friends.all()\
@@ -281,3 +281,14 @@ class DeleteComment(DeleteView):
         return reverse_lazy(
             'group:group_details', kwargs={'group_id': self.object.group_id}
         )
+
+
+# Need to add GroupMemberMixin
+class DeleteEventComment(DeleteView):
+    model = Comment
+
+    def get_success_url(self):
+        # OMG - Problem with catching group_id from kwargs - this solution it is temporary substitute - BUT WORKS! :D
+        return reverse_lazy('group:group_event_details',
+                            kwargs={'group_id': Group.objects.get(group_events=self.object.event_id).id,
+                                    'event_id': self.object.event_id})

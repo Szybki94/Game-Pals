@@ -18,7 +18,8 @@ from django.conf.urls.static import static
 from django.urls import path
 
 
-from .views import AddMemberView, DeleteComment, GroupEventDeleteView, GroupEventDetailsView, GroupAddEventView, GroupCreateView, GroupDetailView, MemberUpdateView, UserGroupsView
+from .views import AddMemberView, DeleteComment, DeleteEventComment, GroupEventDeleteView, GroupEventDetailsView,\
+    GroupAddEventView, GroupCreateView, GroupDetailView, MemberUpdateView, UserGroupsView
 
 
 app_name = "group"
@@ -36,6 +37,8 @@ urlpatterns = [
     path('group-details/<int:group_id>/add-member/', AddMemberView.as_view(), name='add_member'),
     path('group-details/<int:group_id>/member/<int:member_id>', MemberUpdateView.as_view(), name='update_member'),
     path('group-details/<int:group_id>/comment/<int:pk>/delete', DeleteComment.as_view(), name='delete_comment'),
+    path('group-details/<int:group_id>/event-details/<int:event_id>/comment/<int:pk>/delete',
+         DeleteEventComment.as_view(), name='delete_event_comment'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

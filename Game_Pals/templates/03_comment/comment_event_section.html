@@ -7,13 +7,13 @@
             <th><img src="/images/{{ comment.user.profile.avatar }}" alt="Avatar" class="avatar" width="100" height="100"></th>
             <th class="text-lg-start">
                 {{ comment.content }}<br>
-                {{ comment.user.username }} - {{ comment.create_date|date:"Y-m-d H:m" }}
+                {{ comment.user.username }} - {{ comment.create_date|date:"Y-m-d H:i" }}
             </th>
         </tr>
         <tr>
             <th>
                 {% if is_admin or is_extra == True %}
-                    <form method="POST" action="{% url 'delete_event_comment' group.id event.id comment.id %}">
+                    <form method="POST" action="{% url 'group:delete_event_comment' group.id event.id comment.id %}">
                         {% csrf_token %}
                         <input type="hidden" name="comment_id" value="{{ comment.id }}">
                         <input type="submit" name="delete" class="btn btn-warning btn-md" value="Delete Comment">
